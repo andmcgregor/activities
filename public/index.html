@@ -15,9 +15,11 @@
   </head>
 
   <body ng-controller="main">
-    <svg width="100%" height="100%">
-      <rect class="day" width="20" height="20" ng-attr-x="{{day.x}}" ng-attr-y="{{day.y}}" style="fill: #000000;" ng-repeat="day in days"></rect>
-    </svg>
+    <div class="activities">
+      <svg width="1169px" height="156px">
+        <rect class="day" width="20" height="20" ng-attr-x="{{day.x}}" ng-attr-y="{{day.y}}" style="fill: #000000;" ng-repeat="day in days"></rect>
+      </svg>
+    </div>
   </body>
 
 </html>

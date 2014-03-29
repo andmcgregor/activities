@@ -6,7 +6,7 @@ function main($scope, $http) {
 
   date = new Date();
   date.setFullYear(date.getFullYear() - 1);
-  current_day = date.getDay();
+  current_day = date.getDay() + 1;
 
   current_x = space_size;
   current_y = space_size * (current_day + 1) + current_day * day_size;
