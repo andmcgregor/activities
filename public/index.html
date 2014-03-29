@@ -13,6 +13,9 @@
   </head>
 
   <body ng-controller="main">
+    <svg width="100%" height="100%">
+      <rect class="day" width="11" height="11" x="{{ day.x }}" y="{{ day.y }}" style="fill: #000000;" ng-repeat="day in days"></rect>
+    </svg>
   </body>
 
 </html>
