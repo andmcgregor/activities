@@ -11,5 +11,12 @@ app.configure(function() {
   app.use(express.methodOverride());
 });
 
+var Activity = mongoose.model('Activity', {
+  type:    String,
+  date:    Date,
+  project: String,
+  link:    String
+});
+
 app.listen(8000);
 console.log('Server running at http://127.0.0.1:8000/');
