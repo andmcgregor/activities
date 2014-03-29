@@ -1,8 +1,10 @@
+var config = require('./config.json');
+
 var express  = require('express');
 var app      = express();
 var mongoose = require('mongoose');
 
-mongoose.connect('mongodb://andrew:pass123@novus.modulusmongo.net:27017/go7mApiv');
+mongoose.connect(config.db);
 
 app.configure(function() {
   app.use(express.static(__dirname + '/public'));
