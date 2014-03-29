@@ -1,0 +1,11 @@
+{
+  "name"         : "activities",
+  "version"      : "0.0.0",
+  "description"  : "Activity calendar for andrewmcgregor.me",
+  "main"         : "server.js",
+  "author"       : "andmcgregor",
+  "dependencies" : {
+    "express"    : "3.x",
+    "mongoose"   : "3.x"
+  }
+}
