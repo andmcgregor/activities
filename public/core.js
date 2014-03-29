@@ -2,9 +2,9 @@ var activities = angular.module('activities', []);
 
 function main($scope, $http) {
   $scope.days = [
-    {x: y: 0},
-    {y: 13},
-    {y: 26}
+    {x: 0, y: 0},
+    {x: 10, y: 13},
+    {x: 30, y: 26}
   ];
 
   $http.get('/api/activities')
