@@ -16,7 +16,7 @@ app.configure(function() {
 
 var Activity = mongoose.model('Activity', {
   type:    String,
-  date:    Date,
+  date:    { type: Date, unique: true },
   project: String,
   link:    String
 });
@@ -64,12 +64,17 @@ githubRequest = function(path, other) {
       data = JSON.parse(str);
       if (path == '/user/repos') {
         repo_names = fetchRepos(data);
-        console.log('Successfully Fetched Repos!');
+        console.log('Fetched '+repo_names.length+' repos!');
         // loop through repo names
         githubRequest('/repos/'+repo_names[1]+'/commits?author='+config.github_username, { repo: repo_names[1] });
       } else {
         commits = fetchCommits(data, other.repo);
-        console.log(commits);
+        console.log('Fetched '+commits.length+' commits!');
+        promise = Activity.create(commits);
+        promise.then(function(x) {
+          console.log('Promise callback');
+          console.log(x);
+        });
       }
     });
   });
@@ -94,7 +99,7 @@ fetchCommits = function(data, repo) {
   for(x = 0; x < data.length; x++) {
     commits.push({
       type: "commit",
-      date: data[x].commit.committer.date,
+      date: Date.parse(data[x].commit.committer.date),
       project: repo,
       link: data[x].url
     });
