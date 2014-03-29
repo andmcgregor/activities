@@ -20,3 +20,12 @@ var Activity = mongoose.model('Activity', {
 
 app.listen(8000);
 console.log('Server running at http://127.0.0.1:8000/');
+
+app.get('/api/activities', function(req, res) {
+  Activity.find(function(err, activities) {
+    if (err)
+      res.send(err)
+
+    res.json(activities);
+  });
+});
