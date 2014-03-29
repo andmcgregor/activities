@@ -1,6 +1,15 @@
-var http = require('http');
-http.createServer(function (req, res) {
-  res.writeHead(200, {'Content-Type': 'text/plain'});
-  res.end('Hello World\n');
-}).listen(1337, '127.0.0.1');
-console.log('Server running at http://127.0.0.1:1337/');
+var express  = require('express');
+var app      = express();
+var mongoose = require('mongoose');
+
+mongoose.connect('mongodb://andrew:pass123@novus.modulusmongo.net:27017/go7mApiv');
+
+app.configure(function() {
+  app.use(express.static(__dirname + '/public'));
+  app.use(express.logger('dev'));
+  app.use(express.bodyParser());
+  app.use(express.methodOverride());
+});
+
+app.listen(8000);
+console.log('Server running at http://127.0.0.1:8000/');
