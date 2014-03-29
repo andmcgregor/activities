@@ -29,3 +29,7 @@ app.get('/api/activities', function(req, res) {
     res.json(activities);
   });
 });
+
+app.get('*', function(req, res) {
+  res.sendfile('./public/index.html');
+});
