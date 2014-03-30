@@ -17,7 +17,9 @@ app.configure(function() {
 var Activity = mongoose.model('Activity', {
   type:    String,
   date:    { type: Number, unique: true },
-  project: String,
+  owner:   String,
+  repo:    String,
+  secret:  Boolean,
   link:    String
 });
 
@@ -49,7 +51,7 @@ app.get('*', function(req, res) {
 
 // Github API
 
-githubRequest = function(path, misc) {
+githubRequest = function(path, repo) {
   var options = {
     headers: {
       'User-Agent': config.github_username
@@ -85,7 +87,9 @@ githubRequest = function(path, misc) {
           commits.push({
             type: "commit",
             date: parseInt(date) / 1000,
-            project: misc,
+            owner: repo.match(/^[^\/]+/)[0],
+            repo: repo.match(/[^\/]+$/)[0],
+            secret: (config.company_repos.indexOf(repo) > -1),
             link: data[x].url
           });
         }
@@ -93,7 +97,7 @@ githubRequest = function(path, misc) {
           parseCommits(commits);
         }
         if (commits.length == 100) {
-          githubRequest(res.headers.link.match(/^<[^>]+>/)[0].replace(/[<>]/g, ''), misc);
+          githubRequest(res.headers.link.match(/^<[^>]+>/)[0].replace(/[<>]/g, ''), repo);
         }
       }
     });

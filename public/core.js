@@ -84,10 +84,11 @@ function main($scope, $http) {
 
     project_totals = {};
     for(x = 0; x < activities.length; x++) {
-      if (project_totals[activities[x].project]) {
-        project_totals[activities[x].project]++;
+      repo = activities[x].owner+'/'+activities[x].repo
+      if (project_totals[repo]) {
+        project_totals[repo]++;
       } else {
-        project_totals[activities[x].project] = 1;
+        project_totals[repo] = 1;
       }
     }
     console.log(project_totals);
