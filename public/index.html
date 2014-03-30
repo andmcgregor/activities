@@ -17,9 +17,13 @@
   <body ng-controller="main">
     <div class="activities">
       <svg width="1169px" height="156px">
-        <rect class="day" width="20" height="20" ng-attr-x="{{day.x}}" ng-attr-y="{{day.y}}" style="fill: #000000;" ng-repeat="day in days"></rect>
+        <rect class="day" width="20" height="20" ng-attr-x="{{day.x}}" ng-attr-y="{{day.y}}" ng-attr-data-start="{{day.start}}" ng-attr-data-end="{{day.end}}" ng-attr-data-commit-num="{{day.commit_num}}" ng-attr-style="fill: {{day.color}};" ng-repeat="day in days"></rect>
       </svg>
     </div>
+    <p>{{activities.length}} commits</p>
+    <ul>
+      <li ng-repeat="(name, total) in project_totals">{{total}} commit(s) from <strong>{{name}}</strong></li>
+    </ul>
   </body>
 
 </html>
