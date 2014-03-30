@@ -29,12 +29,9 @@ function main($scope, $http) {
         current_day = 0;
       }
 
-      color = '#eeeeee';
-
       for(y = 0; y < activities.length; y++) {
         if(activities[y].date > date_in_ms && activities[y].date < date_in_ms + 86400) {
           commit_num++;
-          color = '#000000';
         }
       }
 
@@ -43,14 +40,43 @@ function main($scope, $http) {
         y: current_y,
         start: date_in_ms,
         end: date_in_ms + 86399,
-        commit_num: commit_num,
-        color: color
+        commit_num: commit_num
       };
 
       current_y = current_y + space_size + day_size;
       date_in_ms = date_in_ms + 86400;
       current_day++;
       commit_num = 0;
+    }
+
+    // calculate color values
+    var none  = '#EEEEEE';
+    var some  = '#89C4F4';
+    var more  = '#4B77BE';
+    var lots  = '#34495E';
+    var heaps = '#2C3E50';
+
+    max = Math.max.apply(Math, days.map(function(day) { return day.commit_num }));
+    console.log(max);
+    for(x = 0; x < days.length; x++) {
+      foo = days[x].commit_num / max;
+      switch (true) {
+        case foo == 0:
+          days[x].color = none;
+          break;
+        case foo > 0 && foo < 0.25:
+          days[x].color = some;
+          break;
+        case foo >= 0.25 && foo < 0.5:
+          days[x].color = more;
+          break;
+        case foo >= 0.5 && foo < 0.75:
+          days[x].color = lots;
+          break;
+        case foo > 0.75:
+          days[x].color = heaps;
+          break;
+      }
     }
 
     $scope.days = days;
