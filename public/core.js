@@ -29,9 +29,13 @@ function main($scope, $http) {
         current_day = 0;
       }
 
+      var secret = false;
       for(y = 0; y < activities.length; y++) {
         if(activities[y].date > date_in_ms && activities[y].date < date_in_ms + 86400) {
           commit_num++;
+          if(activities[y].secret == true) {
+            secret = true;
+          }
         }
       }
 
@@ -40,7 +44,8 @@ function main($scope, $http) {
         y: current_y,
         start: date_in_ms,
         end: date_in_ms + 86399,
-        commit_num: commit_num
+        commit_num: commit_num,
+        secret: secret
       };
 
       current_y = current_y + space_size + day_size;
@@ -57,7 +62,6 @@ function main($scope, $http) {
     var heaps = '#2C3E50';
 
     max = Math.max.apply(Math, days.map(function(day) { return day.commit_num }));
-    console.log(max);
     for(x = 0; x < days.length; x++) {
       foo = days[x].commit_num / max;
       switch (true) {

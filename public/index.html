@@ -17,7 +17,16 @@
   <body ng-controller="main">
     <div class="activities">
       <svg width="1169px" height="156px">
-        <rect class="day" width="20" height="20" ng-attr-x="{{day.x}}" ng-attr-y="{{day.y}}" ng-attr-data-start="{{day.start}}" ng-attr-data-end="{{day.end}}" ng-attr-data-commit-num="{{day.commit_num}}" ng-attr-style="fill: {{day.color}};" ng-repeat="day in days"></rect>
+        <defs>
+          <pattern id="diagonalHatch" patternUnits="userSpaceOnUse", width="4" height="4">
+            <path d="M-1,1 l2,-2 M0,4 l4,-4 M3,5 l2,-2" stroke="#ffffff" stroke-width="1"></path>
+          </pattern>
+        </defs>
+        <g ng-repeat="day in days">
+          <g ng-switch="day.secret">
+          <rect class="day" width="20" height="20" ng-attr-x="{{day.x}}" ng-attr-y="{{day.y}}" data-start="{{day.start}}" data-end="{{day.end}}" data-commit-num="{{day.commit_num}}" style="fill: {{day.color}};" ng-attr-data-secret="{{day.secret}}"></rect>
+            <rect ng-switch-when="true" class="day" width="20" height="20" ng-attr-x="{{day.x}}" ng-attr-y="{{day.y}}" fill="url(#diagonalHatch)"></rect>
+        </g>
       </svg>
     </div>
     <p>{{activities.length}} commits</p>

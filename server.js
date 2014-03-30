@@ -84,12 +84,13 @@ githubRequest = function(path, repo) {
         commits = [];
         for(x = 0; x < data.length; x++) {
           date = Date.parse(data[x].commit.committer.date);
+          secret = config.company_repos.indexOf(repo) > -1
           commits.push({
             type: "commit",
             date: parseInt(date) / 1000,
             owner: repo.match(/^[^\/]+/)[0],
             repo: repo.match(/[^\/]+$/)[0],
-            secret: (config.company_repos.indexOf(repo) > -1),
+            secret: secret,
             link: data[x].url
           });
         }
@@ -125,3 +126,4 @@ parseCommits = function(commits) {
   console.log('Found '+commits.length+'!')
   promise = Activity.create(commits);
 }
+
