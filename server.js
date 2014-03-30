@@ -34,7 +34,7 @@ app.get('/api/activities', function(req, res) {
 });
 
 app.get('/api/update', function() {
-  githubRequest('/user/repos');
+  githubRequest('/user/repos?per_page=100');
 });
 
 app.get('*', function(req, res) {
@@ -43,7 +43,7 @@ app.get('*', function(req, res) {
 
 // Github API
 
-githubRequest = function(path, other) {
+githubRequest = function(path, misc) {
   var options = {
     headers: {
       'User-Agent': config.github_username
@@ -53,6 +53,7 @@ githubRequest = function(path, other) {
     path: path,
     method: 'GET'
   }
+
   var str = '';
 
   var request = https.request(options, function(res) {
@@ -62,49 +63,48 @@ githubRequest = function(path, other) {
 
     res.on('end', function() {
       data = JSON.parse(str);
-      if (path == '/user/repos') {
-        repo_names = fetchRepos(data);
-        console.log('Fetched '+repo_names.length+' repos!');
-        for(x = 0; x < repo_names.length; x++)
-          githubRequest('/repos/'+repo_names[x]+'/commits?author='+config.github_username, { repo: repo_names[x] });
+      if (path == '/user/repos?per_page=100') {
+        repos = [];
+        for(x = 0; x < data.length; x++) {
+          repos.push(data[x].full_name);
+        }
+        if (repos.length != 0)
+          parseRepos(repos);
       } else {
-        commits = fetchCommits(data, other.repo);
-        console.log('Fetched '+commits.length+' commits!');
-        if (commits.length != 0) {
-          promise = Activity.create(commits);
-          promise.then(function(x) {
-            console.log('blah');
+        commits = [];
+        for(x = 0; x < data.length; x++) {
+          date = Date.parse(data[x].commit.committer.date);
+          commits.push({
+            type: "commit",
+            date: parseInt(date) / 1000,
+            project: misc,
+            link: data[x].url
           });
         }
+        if (commits.length != 0)
+          parseCommits(commits);
       }
     });
   });
 
   request.end();
-
-  request.on('error', function(e) {
-    console.error(e);
-  });
 }
 
-fetchRepos = function(data) {
-  repo_names = [];
-  for(x = 0; x < data.length; x++) {
-    repo_names.push(data[x].full_name);
-  }
-  return repo_names;
+parseRepos = function(repos) {
+  console.log('Found '+repos.length+' repos for user: '+config.github_username);
+
+  (function loop(x) {
+    setTimeout(function() {
+      console.log('Finding commits in '+repos[x]+'...');
+      githubRequest('/repos/'+repos[x]+'/commits?author='+config.github_username, repos[x])
+      x++;
+      if (x < repos.length)
+        loop(x);
+    }, 2000);
+  })(1);
 }
 
-fetchCommits = function(data, repo) {
-  commits = [];
-  for(x = 0; x < data.length; x++) {
-    date = Date.parse(data[x].commit.committer.date);
-    commits.push({
-      type: "commit",
-      date: parseInt(date) / 1000,
-      project: repo,
-      link: data[x].url
-    });
-  }
-  return commits;
+parseCommits = function(commits) {
+  console.log('Found '+commits.length+'!')
+  promise = Activity.create(commits);
 }
