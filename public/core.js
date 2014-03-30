@@ -9,6 +9,7 @@ function main($scope, $http) {
 
     date = new Date();
     date.setFullYear(date.getFullYear() - 1);
+    date = new Date(date.getTime() + 86400000);
     current_day = date.getDay();
 
     current_x = space_size;
@@ -19,7 +20,7 @@ function main($scope, $http) {
 
     commit_num = 0;
 
-    days = Array(366);
+    days = Array(365);
 
     for(x = 0; x < days.length; x++) {
       if (current_day > 6) {
