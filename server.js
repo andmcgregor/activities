@@ -37,6 +37,12 @@ app.get('/api/update', function() {
   githubRequest('/user/repos?per_page=100');
 });
 
+app.get('/api/destroy', function() {
+  Activity.remove({}, function() {
+    console.log('No more activities!');
+  })
+});
+
 app.get('*', function(req, res) {
   res.sendfile('./public/index.html');
 });
@@ -68,8 +74,10 @@ githubRequest = function(path, misc) {
         for(x = 0; x < data.length; x++) {
           repos.push(data[x].full_name);
         }
-        if (repos.length != 0)
+        if (repos.length != 0) {
+          repos = repos.concat(config.company_repos);
           parseRepos(repos);
+        }
       } else {
         commits = [];
         for(x = 0; x < data.length; x++) {
@@ -81,8 +89,12 @@ githubRequest = function(path, misc) {
             link: data[x].url
           });
         }
-        if (commits.length != 0)
+        if (commits.length != 0) {
           parseCommits(commits);
+        }
+        if (commits.length == 100) {
+          githubRequest(res.headers.link.match(/^<[^>]+>/)[0].replace(/[<>]/g, ''), misc);
+        }
       }
     });
   });
@@ -91,17 +103,18 @@ githubRequest = function(path, misc) {
 }
 
 parseRepos = function(repos) {
+
   console.log('Found '+repos.length+' repos for user: '+config.github_username);
 
   (function loop(x) {
     setTimeout(function() {
       console.log('Finding commits in '+repos[x]+'...');
-      githubRequest('/repos/'+repos[x]+'/commits?author='+config.github_username, repos[x])
+      githubRequest('/repos/'+repos[x]+'/commits?author='+config.github_username+'&per_page=100', repos[x]);
       x++;
       if (x < repos.length)
         loop(x);
     }, 2000);
-  })(1);
+  })(0);
 }
 
 parseCommits = function(commits) {
