@@ -45,85 +45,128 @@ app.get('/api/destroy', function() {
   })
 });
 
+
+app.get('/api/test', function() {
+  update = new Update();
+  interval = setInterval(function() {
+    if (!update.process()) {
+      clearInterval(interval);
+    }
+  }, 1000);
+});
+
 app.get('*', function(req, res) {
   res.sendfile('./public/index.html');
 });
 
 // Github API
 
-githubRequest = function(path, repo) {
-  var options = {
-    headers: {
-      'User-Agent': config.github_username
-    },
-    auth: config.github_token + ':x-oauth-basic',
-    hostname: 'api.github.com',
-    path: path,
-    method: 'GET'
+function Update() {
+
+  this.queue = [];
+  this.idle = 0;
+
+  this.init = function() {
+    this.queue.push({
+      uri: '/user/repos?per_page=100',
+      repo: null
+    });
   }
 
-  var str = '';
+  this.process = function() {
+    console.log('Queued requests: '+this.queue.length);
 
-  var request = https.request(options, function(res) {
-    res.on('data', function(chunk) {
-      str += chunk;
+    value = this.queue.shift()
+    if(value) {
+      console.log('Requesting: '+value.uri);
+      this.request(value.uri, value.repo);
+      this.idle = 0;
+    } else {
+      console.log('Nothing to process...');
+      this.idle++;
+    }
+    if (this.queue.length == 0 && this.idle > 5) {
+      return false;
+    } else {
+      return true;
+    }
+  }
+
+  this.request = function(path, repo) {
+    var options = {
+      headers: {
+        'User-Agent': config.github_username
+      },
+      auth: config.github_token + ':x-oauth-basic',
+      hostname: 'api.github.com',
+      path: path,
+      method: 'GET'
+    }
+
+    var str = '';
+    var self = this;
+
+    var request = https.request(options, function(res) {
+      res.on('data', function(chunk) {
+        str += chunk;
+      });
+
+      res.on('end', function() {
+        data = JSON.parse(str);
+        if (path.match(/user\/repos/)) {
+          self.parseRepos(res, data);
+        } else if (path.match(/commits\?author/)) {
+          self.parseCommits(res, data, repo);
+        } else {
+          console.log(data.length);
+        }
+      });
     });
 
-    res.on('end', function() {
-      data = JSON.parse(str);
-      if (path == '/user/repos?per_page=100') {
-        repos = [];
-        for(x = 0; x < data.length; x++) {
-          repos.push(data[x].full_name);
-        }
-        if (repos.length != 0) {
-          repos = repos.concat(config.company_repos);
-          parseRepos(repos);
-        }
-      } else {
-        commits = [];
-        for(x = 0; x < data.length; x++) {
-          date = Date.parse(data[x].commit.committer.date);
-          secret = config.company_repos.indexOf(repo) > -1
-          commits.push({
-            type: "commit",
-            date: parseInt(date) / 1000,
-            owner: repo.match(/^[^\/]+/)[0],
-            repo: repo.match(/[^\/]+$/)[0],
-            secret: secret,
-            link: data[x].url
-          });
-        }
-        if (commits.length != 0) {
-          parseCommits(commits);
-        }
-        if (commits.length == 100) {
-          githubRequest(res.headers.link.match(/^<[^>]+>/)[0].replace(/[<>]/g, ''), repo);
-        }
+    request.end();
+  }
+
+  this.parseRepos = function(res, data) {
+    repos = [];
+    for(x = 0; x < data.length; x++) {
+      repos.push(data[x].full_name);
+    }
+    repos = repos.concat(config.company_repos);
+
+    if (repos.length != 0) {
+      for(x = 0; x < repos.length; x++) {
+        this.queue.push({
+          uri:  '/repos/'+repos[x]+'/commits?author='+config.github_username+'&per_page=100',
+          repo: repos[x]
+        });
       }
-    });
-  });
+    }
+  }
 
-  request.end();
+  this.parseCommits = function(res, data, repo) {
+    commits = [];
+    for(x = 0; x < data.length; x++) {
+      date = Date.parse(data[x].commit.committer.date);
+      secret = config.company_repos.indexOf(repo) > -1;
+      commits.push({
+        type: "commit",
+        date: parseInt(date) / 1000,
+        owner: repo.match(/^[^\/]+/)[0],
+        repo: repo.match(/[^\/]+$/)[0],
+        secret: secret,
+        link: data[x].url
+      });
+    }
+    if (commits.length != 0) {
+      promise = Activity.create(commits);
+    }
+    if (commits.length == 100) {
+      this.queue.push({
+        uri:  res.headers.link.match(/^<[^>]+>/)[0].replace(/[<>]/g, ''),
+        repo: repo
+      });
+    }
+  }
+
+  this.init();
 }
-
-parseRepos = function(repos) {
-
-  console.log('Found '+repos.length+' repos for user: '+config.github_username);
-
-  (function loop(x) {
-    setTimeout(function() {
-      console.log('Finding commits in '+repos[x]+'...');
-      githubRequest('/repos/'+repos[x]+'/commits?author='+config.github_username+'&per_page=100', repos[x]);
-      x++;
-      if (x < repos.length)
-        loop(x);
-    }, 2000);
-  })(0);
-}
-
-parseCommits = function(commits) {
-  console.log('Found '+commits.length+'!')
-  promise = Activity.create(commits);
-}
-
