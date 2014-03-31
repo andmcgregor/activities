@@ -7,3 +7,7 @@ body {
   height: 156px;
   margin: 100px auto;
 }
+
+.stats {
+  text-align: center;
+}

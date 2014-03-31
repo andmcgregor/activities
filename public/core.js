@@ -86,16 +86,23 @@ function main($scope, $http) {
     $scope.days = days;
     $scope.activities = activities;
 
-    project_totals = {};
+    totals = {
+      commits: 0,
+      pulls:   0,
+      repos:   0
+    }
+    repos = {}
     for(x = 0; x < activities.length; x++) {
-      repo = activities[x].owner+'/'+activities[x].repo
-      if (project_totals[repo]) {
-        project_totals[repo]++;
+      if(!repos[activities[x].owner+'/'+activities[x].repo]) {
+        repos[activities[x].owner+'/'+activities[x].repo] = 1;
+        totals.repos++;
+      }
+      if(activities[x].type == "commit") {
+        totals.commits++;
       } else {
-        project_totals[repo] = 1;
+        totals.pulls++;
       }
     }
-    console.log(project_totals);
-    $scope.project_totals = project_totals;
+    $scope.totals = totals;
   });
 }

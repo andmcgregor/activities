@@ -29,10 +29,9 @@
         </g>
       </svg>
     </div>
-    <p>{{activities.length}} commits</p>
-    <ul>
-      <li ng-repeat="(name, total) in project_totals">{{total}} commit(s) from <strong>{{name}}</strong></li>
-    </ul>
+    <div class="stats">
+      <p>I've published {{totals.commits}} commits in {{totals.pulls}} pull requests in {{totals.repos}} repos.</p>
+    </div>
   </body>
 
 </html>
