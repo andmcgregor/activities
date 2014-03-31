@@ -69,6 +69,7 @@ function Update() {
   this.init = function() {
     this.queue.push({
       uri: '/user/repos?per_page=100',
+      page: 1,
       repo: null
     });
   }
@@ -79,7 +80,7 @@ function Update() {
     value = this.queue.shift()
     if(value) {
       console.log('Requesting: '+value.uri);
-      this.request(value.uri, value.repo);
+      this.request(value.uri, value.page, value.repo);
       this.idle = 0;
     } else {
       console.log('Nothing to process...');
@@ -92,7 +93,7 @@ function Update() {
     }
   }
 
-  this.request = function(path, repo) {
+  this.request = function(path, page, repo) {
     var options = {
       headers: {
         'User-Agent': config.github_username
@@ -117,8 +118,8 @@ function Update() {
           self.parseRepos(res, data);
         } else if (path.match(/commits\?author/)) {
           self.parseCommits(res, data, repo);
-        } else {
-          console.log(data.length);
+        } else if (path.match(/pulls/)) {
+          self.parsePulls(res, data, repo, page);
         }
       });
     });
@@ -131,13 +132,19 @@ function Update() {
     for(x = 0; x < data.length; x++) {
       repos.push(data[x].full_name);
     }
-    repos = repos.concat(config.company_repos);
+    //repos = repos.concat(config.company_repos);
+    repos = config.company_repos;
 
     if (repos.length != 0) {
       for(x = 0; x < repos.length; x++) {
         this.queue.push({
           uri:  '/repos/'+repos[x]+'/commits?author='+config.github_username+'&per_page=100',
           repo: repos[x]
+        });
+        this.queue.push({
+          uri: '/repos/'+repos[x]+'/pulls?state=all&page=1&per_page=100',
+          repo: repos[x],
+          page: 1
         });
       }
     }
@@ -158,12 +165,41 @@ function Update() {
       });
     }
     if (commits.length != 0) {
-      promise = Activity.create(commits);
+      Activity.create(commits);
     }
     if (commits.length == 100) {
       this.queue.push({
         uri:  res.headers.link.match(/^<[^>]+>/)[0].replace(/[<>]/g, ''),
         repo: repo
+      });
+    }
+  }
+
+  this.parsePulls = function(res, data, repo, page) {
+    pulls = [];
+    console.log('Data length: '+data.length);
+    for(x = 0; x < data.length; x++) {
+      if (data[x].user.login == config.github_username) {
+        date = Date.parse(data[x].created_at)
+        secret = config.company_repos.indexOf(repo) > -1;
+        pulls.push({
+          type: "pull",
+          date: parseInt(date) / 1000,
+          owner: repo.match(/^[^\/]+/)[0],
+          repo: repo.match(/[^\/]+$/)[0],
+          secret: secret,
+          link: data[x].url
+        });
+      }
+    }
+    if (pulls.length != 0) {
+      Activity.create(pulls);
+    }
+    if (data.length == 100) {
+      this.queue.push({
+        uri: '/repos/'+repo+'/pulls?state=all&page='+(page+1)+'&per_page=100',
+        repo: repo,
+        page: page + 1
       });
     }
   }
