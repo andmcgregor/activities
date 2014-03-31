@@ -36,23 +36,18 @@ app.get('/api/activities', function(req, res) {
 });
 
 app.get('/api/update', function() {
-  githubRequest('/user/repos?per_page=100');
-});
-
-app.get('/api/destroy', function() {
-  Activity.remove({}, function() {
-    console.log('No more activities!');
-  })
-});
-
-
-app.get('/api/test', function() {
   update = new Update();
   interval = setInterval(function() {
     if (!update.process()) {
       clearInterval(interval);
     }
   }, 1000);
+});
+
+app.get('/api/destroy', function() {
+  Activity.remove({}, function() {
+    console.log('No more activities!');
+  })
 });
 
 app.get('*', function(req, res) {
@@ -132,8 +127,7 @@ function Update() {
     for(x = 0; x < data.length; x++) {
       repos.push(data[x].full_name);
     }
-    //repos = repos.concat(config.company_repos);
-    repos = config.company_repos;
+    repos = repos.concat(config.company_repos);
 
     if (repos.length != 0) {
       for(x = 0; x < repos.length; x++) {
