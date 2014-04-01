@@ -15,6 +15,18 @@
   </head>
 
   <body ng-controller="main">
+    <div class="title">
+      {{content.title}}
+    </div>
+    <div class="intro">
+      {{content.intro}}
+    </div>
+    <div class="social">
+      <a ng-attr-href="{{link.href}}" ng-repeat="link in content.social">{{link.title}}</a>
+    </div>
+    <div class="stats">
+      <p>I've published {{totals.commits}} commits across {{totals.pulls}} pull requests in {{totals.repos}} repos.</p>
+    </div>
     <div class="activities">
       <svg width="1169px" height="156px">
         <defs>
@@ -22,16 +34,12 @@
             <path d="M-1,1 l2,-2 M0,4 l4,-4 M3,5 l2,-2" stroke="#ffffff" stroke-width="1"></path>
           </pattern>
         </defs>
-        <g ng-repeat="day in days">
-          <g ng-switch="day.secret">
+
+        <g ng-repeat="day in days" ng-switch="day.secret">
           <rect class="day" width="20" height="20" ng-attr-x="{{day.x}}" ng-attr-y="{{day.y}}" data-start="{{day.start}}" data-end="{{day.end}}" data-commit-num="{{day.commit_num}}" style="fill: {{day.color}};" ng-attr-data-secret="{{day.secret}}"></rect>
-            <rect ng-switch-when="true" class="day" width="20" height="20" ng-attr-x="{{day.x}}" ng-attr-y="{{day.y}}" fill="url(#diagonalHatch)"></rect>
+          <rect ng-switch-when="true" class="day" width="20" height="20" ng-attr-x="{{day.x}}" ng-attr-y="{{day.y}}" fill="url(#diagonalHatch)"></rect>
         </g>
       </svg>
     </div>
-    <div class="stats">
-      <p>I've published {{totals.commits}} commits in {{totals.pulls}} pull requests in {{totals.repos}} repos.</p>
-    </div>
   </body>
-
 </html>

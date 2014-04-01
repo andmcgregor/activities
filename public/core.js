@@ -2,7 +2,8 @@ var activities = angular.module('activities', []);
 
 function main($scope, $http) {
   $http.get('/api/activities').success(function(data) {
-    activities = data;
+    $scope.content = data.content;
+    activities = data.activities;
 
     day_size = 20;
     space_size = 2;
