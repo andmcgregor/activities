@@ -31,7 +31,16 @@ app.get('/api/activities', function(req, res) {
     if (err)
       res.send(err)
 
-    res.json(activities);
+    response = {
+      "activities": activities,
+      "content": {
+        "title":  config.title,
+        "intro":  config.intro,
+        "social": config.social
+      }
+    };
+
+    res.json(response);
   });
 });
 
