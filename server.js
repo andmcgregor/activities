@@ -81,7 +81,7 @@ function Update() {
       console.log('Nothing to process...');
       this.idle++;
     }
-    if (this.queue.length == 0 && this.idle > 5) {
+    if (this.queue.length == 0 && this.idle > 10) {
       return false;
     } else {
       return true;
@@ -171,7 +171,6 @@ function Update() {
 
   this.parsePulls = function(res, data, repo, page) {
     pulls = [];
-    console.log('Data length: '+data.length);
     for(x = 0; x < data.length; x++) {
       if (data[x].user.login == config.github_username) {
         date = Date.parse(data[x].created_at)
@@ -190,10 +189,11 @@ function Update() {
       Activity.create(pulls);
     }
     if (data.length == 100) {
+      page++;
       this.queue.push({
-        uri: '/repos/'+repo+'/pulls?state=all&page='+(page+1)+'&per_page=100',
+        uri: '/repos/'+repo+'/pulls?state=all&page='+page+'&per_page=100',
         repo: repo,
-        page: page + 1
+        page: page
       });
     }
   }
