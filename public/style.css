@@ -5,9 +5,18 @@ body {
 .activities {
   width: 1169px;
   height: 156px;
-  margin: 100px auto;
+  margin: 0 auto;
 }
 
-.stats {
+.stats,
+.title,
+.intro,
+.social {
+  width: 700px;
+  margin: 25px auto;
   text-align: center;
+}
+
+.social a {
+  margin: auto 5px;
 }
