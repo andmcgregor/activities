@@ -129,13 +129,16 @@ activities.controller('main', ['$scope', '$http',
 
     $scope.daySelectBegin = function(event) {
       event.preventDefault();
+
+      $('rect').css('opacity', '0.3');
+
       $('.select').show();
       $('.select').css('width', '1px', 'height', '1px');
       $('.select').offset({top: event.clientY, left: event.clientX});
       $('.select').data('top', event.clientY);
       $('.select').data('left', event.clientX);
+
       $scope.mousedown = true;
-      console.log(event);
     }
 
     $scope.daySelecting = function(event) {
@@ -143,12 +146,20 @@ activities.controller('main', ['$scope', '$http',
       y = $('.select').data('top');
       x = $('.select').data('left');
       $('.select').css({width: event.pageX-x+'px', height: event.pageY-y+'px'})
-      //console.log(event);
+
+      // lol
+      for(x = 0; rects.length; x++) {
+        if(rects.length) {
+          if($(rects[x]).offset().top < event.pageY && $(rects[x]).offset().left < event.pageX) {
+            $(rects[x]).css('opacity', '1');
+          }
+        }
+      }
     }
 
     $scope.daySelectEnd = function(event) {
       event.preventDefault();
+      $('rect').css('opacity', '1');
       $('.select').hide();
-      console.log(event);
     }
 }]);
