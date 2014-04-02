@@ -14,7 +14,7 @@
     <script src="core.js"></script>
   </head>
 
-  <body ng-controller="main">
+  <body ng-controller="main" ng-mousedown="daySelectBegin($event)" ng-mouseup="daySelectEnd($event)" ng-mousemove="daySelecting($event)">
     <div class="title">
       {{content.title}}
     </div>
@@ -27,7 +27,7 @@
     <div class="stats">
       <p>I've published {{totals.commits}} commits across {{totals.pulls}} pull requests in {{totals.repos}} repos.</p>
     </div>
-    <div class="activities">
+    <div class="activities"> 
       <svg width="1169px" height="156px">
         <defs>
           <pattern id="diagonalHatch" patternUnits="userSpaceOnUse", width="4" height="4">
@@ -43,6 +43,8 @@
     </div>
     <div class="hover">
       x contributions on date
+    </div>
+    <div class="select">
     </div>
   </body>
 </html>

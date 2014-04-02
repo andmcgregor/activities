@@ -104,7 +104,7 @@ activities.controller('main', ['$scope', '$http',
           totals.repos++;
         }
         if(activities[x].type == "commit") {
-        totals.commits++;
+          totals.commits++;
         } else {
           totals.pulls++;
         }
@@ -113,15 +113,42 @@ activities.controller('main', ['$scope', '$http',
     });
 
     $scope.dayHover = function(day, event) {
-      $('.hover').html(day.commit_num+' contributions on '+day.date);
-      $('.hover').show();
-      offset = $(event.target).offset();
-      offset.top -= 20;
-      offset.left -= 90;
-      $('.hover').offset(offset);
+      if (!$scope.mousedown) {
+        $('.hover').html(day.commit_num+' contributions on '+day.date);
+        $('.hover').show();
+        offset = $(event.target).offset();
+        offset.top -= 20;
+        offset.left -= 90;
+        $('.hover').offset(offset);
+      }
     }
 
     $scope.removeHover = function() {
       $('.hover').hide();
+    }
+
+    $scope.daySelectBegin = function(event) {
+      event.preventDefault();
+      $('.select').show();
+      $('.select').css('width', '1px', 'height', '1px');
+      $('.select').offset({top: event.clientY, left: event.clientX});
+      $('.select').data('top', event.clientY);
+      $('.select').data('left', event.clientX);
+      $scope.mousedown = true;
+      console.log(event);
+    }
+
+    $scope.daySelecting = function(event) {
+      event.preventDefault();
+      y = $('.select').data('top');
+      x = $('.select').data('left');
+      $('.select').css({width: event.pageX-x+'px', height: event.pageY-y+'px'})
+      //console.log(event);
+    }
+
+    $scope.daySelectEnd = function(event) {
+      event.preventDefault();
+      $('.select').hide();
+      console.log(event);
     }
 }]);

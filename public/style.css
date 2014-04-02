@@ -29,3 +29,11 @@ body {
   position: relative;
   background: #000000;
 }
+
+.select {
+  display: none;
+  position: relative;
+  background: #ff0000;
+  opacity: 0.4;
+  border: 1px solid #ff0000;
+}
