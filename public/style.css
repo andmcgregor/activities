@@ -20,3 +20,12 @@ body {
 .social a {
   margin: auto 5px;
 }
+
+.hover {
+  display: none;
+  color: #ffffff;
+  width: 500px;
+  height: 20px;
+  position: relative;
+  background: #000000;
+}
