@@ -143,18 +143,29 @@ activities.controller('main', ['$scope', '$http',
 
     $scope.daySelecting = function(event) {
       event.preventDefault();
-      y = $('.select').data('top');
-      x = $('.select').data('left');
-      $('.select').css({width: event.pageX-x+'px', height: event.pageY-y+'px'})
+      if($rectsXoord) {
+        y = $('.select').data('top');
+        x = $('.select').data('left');
+        $('.select').css({width: event.pageX-x+'px', height: event.pageY-y+'px'})
 
-      // lol
-      for(x = 0; rects.length; x++) {
-        if(rects.length) {
-          if($(rects[x]).offset().top < event.pageY && $(rects[x]).offset().left < event.pageX) {
-            $(rects[x]).css('opacity', '1');
+        console.log('X: '+event.pageX+', Y: '+event.pageY);
+        console.log('X: '+$rectsXoord[0].x+', Y: '+$rectsXoord[0].y);
+        console.log('----------------');
+        for(x = 0; x < $rectsXoord.length; x++) {
+          if($rectsXoord[x].y < event.pageY && $rectsXoord[x].x < event.pageX) {
+            $('rect[data-start="'+$rectsXoord[x].id+'"]').css('fill', '#ff0000');
           }
         }
       }
+
+      // lol
+      //for(x = 0; rects.length; x++) {
+      //  if(rects.length) {
+      //    if($(rects[x]).offset().top < event.pageY && $(rects[x]).offset().left < event.pageY) {
+      //      $(rects[x]).css('opacity', '1');
+      //    }
+      //  }
+      //}
     }
 
     $scope.daySelectEnd = function(event) {
@@ -163,3 +174,19 @@ activities.controller('main', ['$scope', '$http',
       $('.select').hide();
     }
 }]);
+
+activities.run(function() {
+  setTimeout(function() {
+    rects = $('rect');
+    console.log(rects.length);
+    $rectsXoord = [];
+    for(x = 0; x < rects.length; x++) {
+      $rectsXoord.push({
+        x: $(rects[x]).offset().left,
+        y: $(rects[x]).offset().top,
+        id: $(rects[x]).data('start')
+      });
+    }
+  }, 10000); // need to get these loading faster!
+});
+
