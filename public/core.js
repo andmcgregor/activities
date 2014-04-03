@@ -135,17 +135,32 @@ activities.controller('main', ['$scope', '$http',
       for (var repo in repos) {
         reposArray.push({repo: repo, count: repos[repo]});
       }
-      console.log(reposArray);
+
       var radius = Math.min(250, 250) / 2;
 
       colors = ["#98abc5", "#8a89a6", "#7b6888", "#6b486b", "#a05d56", "#d0743c", "#ff8c00"];
 
-      var repoArc = d3.svg.arc().outerRadius(radius - 10).innerRadius(0);
-      var repoPie = d3.layout.pie().sort(null).value(function(d) { return d.count; });
-      var repoSvg = d3.select('.activities').append('svg').attr('width', 250)
-           .attr('height', 250).append('g').attr('transform', 'translate(125,125)');
-      var repog = repoSvg.selectAll('.arc').data(repoPie(reposArray)).enter().append('g').attr('class', 'arc');
-      repog.append('path').attr('d', repoArc).style('fill', function(d) { return colors[Math.floor(Math.random()*colors.length)]; });
+      var repoArc = d3.svg.arc()
+                          .outerRadius(radius - 10)
+                          .innerRadius(0);
+
+      var repoPie = d3.layout.pie()
+                             .sort(null)
+                             .value(function(d) { return d.count; });
+
+      var repoSvg = d3.select('.activities').append('svg')
+                                            .attr('width', 250)
+                                            .attr('height', 250)
+                                            .append('g')
+                                            .attr('transform', 'translate(125,125)');
+
+      var repog = repoSvg.selectAll('.arc').data(repoPie(reposArray))
+                                           .enter()
+                                           .append('g')
+                                           .attr('class', 'arc');
+
+      repog.append('path').attr('d', repoArc)
+                          .style('fill', function(d) { return colors[Math.floor(Math.random()*colors.length)]; });
     });
 
     $scope.dayHover = function(day, event) {
