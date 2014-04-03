@@ -33,7 +33,6 @@ body {
 .select {
   display: none;
   position: relative;
-  /*background: #ff0000;
-  opacity: 0.1;*/
-  border: 1px solid #ff0000;
+  background: #ff0000;
+  opacity: 0.1;
 }

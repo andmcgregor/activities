@@ -3,6 +3,9 @@ var activities = angular.module('activities', []);
 activities.controller('main', ['$scope', '$http',
   function($scope, $http) {
     $http.get('/api/activities').success(function(data) {
+      $rectsXoord = [];
+      $mousedown = false;
+
       // move logic to server side
       $scope.content = data.content;
       activities = data.activities;
@@ -110,10 +113,22 @@ activities.controller('main', ['$scope', '$http',
         }
       }
       $scope.totals = totals;
+
+      setTimeout(function() {
+        rects = $('rect');
+        for(x = 0; x < rects.length; x++) {
+          $rectsXoord.push({
+            x: $(rects[x]).offset().left,
+            y: $(rects[x]).offset().top,
+            id: $(rects[x]).data('start')
+          });
+        }
+        console.log('rectsXoord loaded');
+      }, 3000); 
     });
 
     $scope.dayHover = function(day, event) {
-      if (!$scope.mousedown) {
+      if (!$mousedown) {
         $('.hover').html(day.commit_num+' contributions on '+day.date);
         $('.hover').show();
         offset = $(event.target).offset();
@@ -129,64 +144,51 @@ activities.controller('main', ['$scope', '$http',
 
     $scope.daySelectBegin = function(event) {
       event.preventDefault();
+      $mousedown = true;
 
-      $('rect').css('opacity', '0.3');
+      $('rect').css('opacity', '0.1');
 
       $('.select').show();
       $('.select').css('width', '1px', 'height', '1px');
       $('.select').offset({top: event.clientY, left: event.clientX});
       $('.select').data('top', event.clientY);
       $('.select').data('left', event.clientX);
-
-      $scope.mousedown = true;
     }
 
     $scope.daySelecting = function(event) {
       event.preventDefault();
-      if($rectsXoord) {
-        y = $('.select').data('top');
-        x = $('.select').data('left');
-        $('.select').css({width: event.pageX-x+'px', height: event.pageY-y+'px'})
+      if ($rectsXoord && $mousedown) {
+        select = $('.select');
+        width = event.pageX - select.data('left');
+        height = event.pageY - select.data('top');
+        absHeight = Math.abs(height);
+        absWidth = Math.abs(width);
+        if (width < 0) {
+          select.offset({left: event.pageX});
+        }
+        if (height < 0) {
+          select.offset({top: event.pageY});
+        }
+        select.css({width: absWidth, height: absHeight});
+        $('rect').css('opacity', '0.1');
+        for(i = 0; i < $rectsXoord.length; i++) {
+          xc = $rectsXoord[i].x + 10;
+          yc = $rectsXoord[i].y + 10;
 
-        console.log('X: '+event.pageX+', Y: '+event.pageY);
-        console.log('X: '+$rectsXoord[0].x+', Y: '+$rectsXoord[0].y);
-        console.log('----------------');
-        for(x = 0; x < $rectsXoord.length; x++) {
-          if($rectsXoord[x].y < event.pageY && $rectsXoord[x].x < event.pageX) {
-            $('rect[data-start="'+$rectsXoord[x].id+'"]').css('fill', '#ff0000');
+          if (xc > select.offset().left && xc < select.offset().left + absWidth &&
+               yc > select.offset().top && yc < select.offset().top + absHeight ) {
+            $('rect[data-start="'+$rectsXoord[i].id+'"]').css('opacity', '1');
           }
         }
       }
-
-      // lol
-      //for(x = 0; rects.length; x++) {
-      //  if(rects.length) {
-      //    if($(rects[x]).offset().top < event.pageY && $(rects[x]).offset().left < event.pageY) {
-      //      $(rects[x]).css('opacity', '1');
-      //    }
-      //  }
-      //}
     }
 
     $scope.daySelectEnd = function(event) {
       event.preventDefault();
-      $('rect').css('opacity', '1');
+      //$('rect').css('opacity', '1');
       $('.select').hide();
+
+      $mousedown = false;
     }
 }]);
-
-activities.run(function() {
-  setTimeout(function() {
-    rects = $('rect');
-    console.log(rects.length);
-    $rectsXoord = [];
-    for(x = 0; x < rects.length; x++) {
-      $rectsXoord.push({
-        x: $(rects[x]).offset().left,
-        y: $(rects[x]).offset().top,
-        id: $(rects[x]).data('start')
-      });
-    }
-  }, 10000); // need to get these loading faster!
-});
 
