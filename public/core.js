@@ -105,6 +105,8 @@ activities.controller('main', ['$scope', '$http',
         if(!repos[activities[x].owner+'/'+activities[x].repo]) {
           repos[activities[x].owner+'/'+activities[x].repo] = 1;
           totals.repos++;
+        } else {
+          repos[activities[x].owner+'/'+activities[x].repo]++;
         }
         if(activities[x].type == "commit") {
           totals.commits++;
@@ -113,7 +115,9 @@ activities.controller('main', ['$scope', '$http',
         }
       }
       $scope.totals = totals;
+      $scope.repos = repos;
 
+      // load cell data
       setTimeout(function() {
         rects = $('rect');
         for(x = 0; x < rects.length; x++) {
@@ -125,6 +129,23 @@ activities.controller('main', ['$scope', '$http',
         }
         console.log('rectsXoord loaded');
       }, 3000); 
+
+      // adds pie charts
+      reposArray = [];
+      for (var repo in repos) {
+        reposArray.push({repo: repo, count: repos[repo]});
+      }
+      console.log(reposArray);
+      var radius = Math.min(250, 250) / 2;
+
+      colors = ["#98abc5", "#8a89a6", "#7b6888", "#6b486b", "#a05d56", "#d0743c", "#ff8c00"];
+
+      var repoArc = d3.svg.arc().outerRadius(radius - 10).innerRadius(0);
+      var repoPie = d3.layout.pie().sort(null).value(function(d) { return d.count; });
+      var repoSvg = d3.select('.activities').append('svg').attr('width', 250)
+           .attr('height', 250).append('g').attr('transform', 'translate(125,125)');
+      var repog = repoSvg.selectAll('.arc').data(repoPie(reposArray)).enter().append('g').attr('class', 'arc');
+      repog.append('path').attr('d', repoArc).style('fill', function(d) { return colors[Math.floor(Math.random()*colors.length)]; });
     });
 
     $scope.dayHover = function(day, event) {

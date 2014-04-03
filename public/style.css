@@ -37,3 +37,7 @@ html, body {
   background: #ff0000;
   opacity: 0.1;
 }
+
+.arc path {
+  color: #ff0000;
+}
