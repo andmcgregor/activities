@@ -41,3 +41,7 @@ html, body {
 .arc path {
   color: #ff0000;
 }
+
+#selected_repo_count {
+  margin-top: 250px;
+}

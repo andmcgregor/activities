@@ -36,15 +36,29 @@ activities.controller('main', ['$scope', '$http',
         }
 
         var secret = false;
-        var commitsByRepo = {};
+        var commitsByRepo = [];
         for(y = 0; y < activities.length; y++) {
           if(activities[y].date > date_in_ms && activities[y].date < date_in_ms + 86400) {
             commit_num++;
-            if (commitsByRepo[activities[y].owner+'/'+activities[y].repo]) {
-              commitsByRepo[activities[y].owner+'/'+activities[y].repo]++
-            } else {
-              commitsByRepo[activities[y].owner+'/'+activities[y].repo] = 1
+            //if (commitsByRepo[activities[y].owner+'/'+activities[y].repo]) {
+            //  commitsByRepo[activities[y].owner+'/'+activities[y].repo]++
+            //} else {
+            var name = activities[y].owner+'/'+activities[y].repo;
+            //}
+            var found = false;
+            for(z=0;z<commitsByRepo.length;z++) {
+              if(commitsByRepo[z].name === name) {
+                commitsByRepo[z].count++;
+                found = true;
+              }
             }
+            if (found == false) {
+              commitsByRepo.push({
+                name: name,
+                count: 1
+              });
+            }
+
             if(activities[y].secret == true) {
               secret = true;
             }
@@ -168,6 +182,11 @@ activities.controller('main', ['$scope', '$http',
 
       repog.append('path').attr('d', repoArc)
                           .style('fill', function(d) { return colors[Math.floor(Math.random()*colors.length)]; });
+
+      // need to refactor to avoid global vars!
+      $pie = repoPie;
+      $svg = repoSvg;
+
     });
 
     $scope.dayHover = function(day, event) {
@@ -214,15 +233,52 @@ activities.controller('main', ['$scope', '$http',
         }
         select.css({width: absWidth, height: absHeight});
         $('rect').css('opacity', '0.1');
+        reposArray = [];
         for(i = 0; i < $rectsXoord.length; i++) {
           xc = $rectsXoord[i].x + 10;
           yc = $rectsXoord[i].y + 10;
 
+          // highlights selected
           if (xc > select.offset().left && xc < select.offset().left + absWidth &&
                yc > select.offset().top && yc < select.offset().top + absHeight ) {
             $('rect[data-start="'+$rectsXoord[i].id+'"]').css('opacity', '1');
+
+            data = $('rect[data-start="'+$rectsXoord[i].id+'"]').data('commits-by-repo');
+            if (data) {
+              for(w=0;w<data.length;w++) {
+                var name = data[w].name;
+                var found = false;
+                for(z=0;z<reposArray.length;z++) {
+                  if(reposArray[z].name === name) {
+                    reposArray[z].count++;
+                    found = true;
+                  }
+                }
+                if (found == false) {
+                  reposArray.push({
+                    name: name,
+                    count: 1
+                  });
+                }
+              }
+            }
           }
         }
+          //reposArray = [];
+          //for (var repo in repos) {
+           // reposArray.push({repo: repo, count: repos[repo]});
+
+        //$svg.selectAll('.arc').data($pie(reposArray))
+         //                       .enter()
+          //                      .append('g')
+          //
+           //                     .attr('class', 'arc');
+        $('#selected_repo_count span').html(reposArray.length);
+        totals = 0;
+        for (q=0;q<reposArray.length;q++) {
+          totals += reposArray[q].count;
+        }
+        $('#selected_commit_count span').html(totals);
       }
     }
 
