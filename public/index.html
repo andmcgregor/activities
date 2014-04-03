@@ -37,7 +37,7 @@
         </defs>
 
         <g ng-repeat="day in days" ng-switch="day.secret">
-        <rect class="day" width="20" height="20" ng-attr-x="{{day.x}}" ng-attr-y="{{day.y}}" data-start="{{day.start}}" data-end="{{day.end}}" data-date="{{day.date}}" data-commit-num="{{day.commit_num}}" style="fill: {{day.color}};" ng-attr-data-secret="{{day.secret}}" ng-mouseover="dayHover(day, $event)" ng-mouseout="removeHover()"></rect>
+        <rect class="day" width="20" height="20" ng-attr-x="{{day.x}}" ng-attr-y="{{day.y}}" data-start="{{day.start}}" data-end="{{day.end}}" data-date="{{day.date}}" data-commit-num="{{day.commit_num}}" style="fill: {{day.color}};" ng-attr-data-secret="{{day.secret}}" ng-attr-data-commits-by-repo="{{day.commits_by_repo}}" ng-mouseover="dayHover(day, $event)" ng-mouseout="removeHover()"></rect>
           <rect ng-switch-when="true" class="day" width="20" height="20" ng-attr-x="{{day.x}}" ng-attr-y="{{day.y}}" fill="url(#diagonalHatch)" ng-mouseover="dayHover(day, $event)"></rect>
         </g>
       </svg>

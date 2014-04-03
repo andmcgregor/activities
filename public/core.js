@@ -36,9 +36,15 @@ activities.controller('main', ['$scope', '$http',
         }
 
         var secret = false;
+        var commitsByRepo = {};
         for(y = 0; y < activities.length; y++) {
           if(activities[y].date > date_in_ms && activities[y].date < date_in_ms + 86400) {
             commit_num++;
+            if (commitsByRepo[activities[y].owner+'/'+activities[y].repo]) {
+              commitsByRepo[activities[y].owner+'/'+activities[y].repo]++
+            } else {
+              commitsByRepo[activities[y].owner+'/'+activities[y].repo] = 1
+            }
             if(activities[y].secret == true) {
               secret = true;
             }
@@ -52,6 +58,7 @@ activities.controller('main', ['$scope', '$http',
           end: date_in_ms + 86399,
           date: date.toString(),
           commit_num: commit_num,
+          commits_by_repo: JSON.stringify(commitsByRepo),
           secret: secret
         };
 
