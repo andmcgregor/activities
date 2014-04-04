@@ -74,6 +74,8 @@ function Parser(activities) {
     cells[x] = {
       x: current_x,
       y: current_y,
+      offsetX: 0,
+      offsetY: 0,
       start: seconds,
       end: seconds + 86399,
       date: date.toString(),

@@ -1,14 +1,25 @@
+$mousedown = false;
+
 var activities = angular.module('activities', []);
 
 activities.controller('main', ['$scope', '$http',
   function($scope, $http) {
     $http.get('/api/activities').success(function(data) {
-      $mousedown = false;
-
       var parsed = new Parser(data.activities);
       $scope.cells = parsed.cells;
       $scope.repos = parsed.repos;
       $scope.content = data.content;
+
+      // calculates x/y offsets once svg is drawn
+      // TODO don't assume cells are drawn in < 3 seconds
+      setTimeout(function() {
+        for(x = 0; x < $scope.cells.length; x++) {
+          el = $('rect[data-start="'+$scope.cells[x].start+'"]');
+          $scope.cells[x].offsetX = el.offset().left;
+          $scope.cells[x].offsetY = el.offset().top;
+        }
+        console.log('rectsXoord loaded');
+      }, 3000);
 
       // adds pie chart
       reposArray = [];
@@ -50,27 +61,29 @@ activities.controller('main', ['$scope', '$http',
 
     $scope.daySelecting = function(event) {
       event.preventDefault();
-      select = $('.select');
-      width = event.pageX - select.data('left');
-      height = event.pageY - select.data('top');
-      absHeight = Math.abs(height);
-      absWidth = Math.abs(width);
-      if (width < 0) {
-        select.offset({left: event.pageX});
-      }
-      if (height < 0) {
-        select.offset({top: event.pageY});
-      }
-      select.css({width: absWidth, height: absHeight});
-      $('rect').css('opacity', '0.1');
+      if($mousedown) {
+        select = $('.select');
+        width = event.pageX - select.data('left');
+        height = event.pageY - select.data('top');
+        absHeight = Math.abs(height);
+        absWidth = Math.abs(width);
+        if (width < 0) {
+          select.offset({left: event.pageX});
+        }
+        if (height < 0) {
+          select.offset({top: event.pageY});
+        }
+        select.css({width: absWidth, height: absHeight});
+        $('rect').css('opacity', '0.1');
 
-      for(i = 0; i < $scope.cells.length; i++) {
-        xc = $scope.cells[i].y + 10;
-        yc = $scope.cells[i].x + 10;
+        for(i = 0; i < $scope.cells.length; i++) {
+          xc = $scope.cells[i].offsetX + 10;
+          yc = $scope.cells[i].offsetY + 10;
 
-        if (xc > select.offset().left && xc < select.offset().left + absWidth &&
-            yc > select.offset().top && yc < select.offset().top + absHeight ) {
-          $('rect[data-start="'+$scope.cells[i].start+'"]').css('opacity', '1');
+          if (xc > select.offset().left && xc < select.offset().left + absWidth &&
+              yc > select.offset().top && yc < select.offset().top + absHeight ) {
+            $('rect[data-start="'+$scope.cells[i].start+'"]').css('opacity', '1');
+          }
         }
 
         //$('#selected_repo_count span').html(reposArray.length);
