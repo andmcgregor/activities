@@ -1,5 +1,5 @@
 $mousedown = false;
-$selected = false;
+$selected = [];
 
 var activities = angular.module('activities', []);
 
@@ -25,11 +25,12 @@ activities.controller('main', ['$scope', '$http',
       // adds pie chart
       reposArray = [];
       for (var repo in parsed.repos) {
-        reposArray.push({repo: repo, count: parsed.repos[repo]});
+        reposArray.push({name: repo, count: parsed.repos[repo]});
       }
 
       colors = ["#98abc5", "#8a89a6", "#7b6888", "#6b486b", "#a05d56", "#d0743c", "#ff8c00"];
       var chart = new Chart(reposArray, 250, colors);
+      $reposArray = reposArray;
     });
 
     $scope.dayHover = function(day, event) {
@@ -84,26 +85,35 @@ activities.controller('main', ['$scope', '$http',
           if (xc > select.offset().left && xc < select.offset().left + absWidth &&
               yc > select.offset().top && yc < select.offset().top + absHeight ) {
             $('rect[data-start="'+$scope.cells[i].start+'"]').css('opacity', '1');
-            $selected = true;
+            $selected.push($scope.cells[i]); // this is every cell selected not final selection!
           }
         }
-
-        //$('#selected_repo_count span').html(reposArray.length);
-        //totals = 0;
-        //for (q=0;q<reposArray.length;q++) {
-        //  totals += reposArray[q].count;
-        //}
-        //$('#selected_commit_count span').html(totals);
       }
     }
 
     $scope.daySelectEnd = function(event) {
       event.preventDefault();
       $('.select').hide();
-      if($selected == false) {
+      if($selected.length == 0) {
         $('rect').css('opacity', '1');
+      } else {
+        // reset counts
+        for(x = 0; x < $reposArray.length; x++) {
+          $reposArray[x].count = 0;
+        }
+        newData = [];
+        for(x = 0; x < $selected.length; x++) {
+          repoCounts = JSON.parse($selected[x].commits_by_repo);
+          for(y = 0; y < repoCounts.length; y++) {
+            newData.push(repoCounts[y]);
+          }
+        }
+        // TODO send data to existing pie chart
+        console.log(newData);
+        colors = ["#98abc5", "#8a89a6", "#7b6888", "#6b486b", "#a05d56", "#d0743c", "#ff8c00"];
+        new Chart(newData, 250, colors);
       }
-      $selected = false;
+      $selected = [];
       $mousedown = false;
     }
 }]);
