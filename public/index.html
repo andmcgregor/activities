@@ -12,6 +12,7 @@
     <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.0/jquery.min.js"></script>
     <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.15/angular.min.js"></script>
     <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+    <script src="parser.js"></script>
     <script src="charts.js"></script>
     <script src="core.js"></script>
   </head>
@@ -37,9 +38,9 @@
           </pattern>
         </defs>
 
-        <g ng-repeat="day in days" ng-switch="day.secret">
-        <rect class="day" width="20" height="20" ng-attr-x="{{day.x}}" ng-attr-y="{{day.y}}" data-start="{{day.start}}" data-end="{{day.end}}" data-date="{{day.date}}" data-commit-num="{{day.commit_num}}" style="fill: {{day.color}};" ng-attr-data-secret="{{day.secret}}" ng-attr-data-commits-by-repo="{{day.commits_by_repo}}" ng-mouseover="dayHover(day, $event)" ng-mouseout="removeHover()"></rect>
-          <rect ng-switch-when="true" class="day" width="20" height="20" ng-attr-x="{{day.x}}" ng-attr-y="{{day.y}}" fill="url(#diagonalHatch)" ng-mouseover="dayHover(day, $event)"></rect>
+        <g ng-repeat="cell in cells" ng-switch="cell.secret">
+        <rect class="day" width="20" height="20" ng-attr-x="{{cell.x}}" ng-attr-y="{{cell.y}}" data-start="{{cell.start}}" data-end="{{cell.end}}" data-date="{{cell.date}}" data-commit-num="{{cell.commit_num}}" style="fill: {{cell.color}};" ng-attr-data-secret="{{cell.secret}}" ng-attr-data-commits-by-repo="{{cell.commits_by_repo}}" ng-mouseover="dayHover(cell, $event)" ng-mouseout="removeHover()"></rect>
+          <rect ng-switch-when="true" class="day" width="20" height="20" ng-attr-x="{{cell.x}}" ng-attr-y="{{cell.y}}" fill="url(#diagonalHatch)" ng-mouseover="dayHover(cell, $event)"></rect>
         </g>
       </svg>
     </div>
