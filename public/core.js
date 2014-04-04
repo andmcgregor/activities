@@ -9,6 +9,7 @@ activities.controller('main', ['$scope', '$http',
       var parsed = new Parser(data.activities);
       $scope.cells = parsed.cells;
       $scope.repos = parsed.repos;
+      $scope.totals = parsed.totals;
       $scope.content = data.content;
 
       // calculates x/y offsets once svg is drawn
@@ -109,7 +110,6 @@ activities.controller('main', ['$scope', '$http',
           }
         }
         // TODO send data to existing pie chart
-        console.log(newData);
         colors = ["#98abc5", "#8a89a6", "#7b6888", "#6b486b", "#a05d56", "#d0743c", "#ff8c00"];
         new Chart(newData, 250, colors);
       }

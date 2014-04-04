@@ -144,5 +144,6 @@ function Parser(activities) {
     }
   }
 
+  this.totals = totals;
   this.repos = repos;
 }
