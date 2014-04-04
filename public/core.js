@@ -1,4 +1,5 @@
 $mousedown = false;
+$selected = false;
 
 var activities = angular.module('activities', []);
 
@@ -83,6 +84,7 @@ activities.controller('main', ['$scope', '$http',
           if (xc > select.offset().left && xc < select.offset().left + absWidth &&
               yc > select.offset().top && yc < select.offset().top + absHeight ) {
             $('rect[data-start="'+$scope.cells[i].start+'"]').css('opacity', '1');
+            $selected = true;
           }
         }
 
@@ -97,9 +99,11 @@ activities.controller('main', ['$scope', '$http',
 
     $scope.daySelectEnd = function(event) {
       event.preventDefault();
-      //$('rect').css('opacity', '1');
       $('.select').hide();
-
+      if($selected == false) {
+        $('rect').css('opacity', '1');
+      }
+      $selected = false;
       $mousedown = false;
     }
 }]);
