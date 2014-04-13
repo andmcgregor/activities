@@ -30,7 +30,8 @@ activities.controller('main', ['$scope', '$http',
       }
 
       colors = ["#98abc5", "#8a89a6", "#7b6888", "#6b486b", "#a05d56", "#d0743c", "#ff8c00"];
-      var chart = new Chart(reposArray, 250, colors);
+      repoStats = new Chart(reposArray, 250, colors);
+      $repoStats = repoStats
       $reposArray = reposArray;
     });
 
@@ -86,7 +87,11 @@ activities.controller('main', ['$scope', '$http',
           if (xc > select.offset().left && xc < select.offset().left + absWidth &&
               yc > select.offset().top && yc < select.offset().top + absHeight ) {
             $('rect[data-start="'+$scope.cells[i].start+'"]').css('opacity', '1');
-            $selected.push($scope.cells[i]); // this is every cell selected not final selection!
+            var index = $selected.indexOf($scope.cells[i]);
+            if(index == -1) {
+              $selected.push($scope.cells[i]);
+            }
+            // this is every cell selected not final selection!
           }
         }
       }
@@ -106,14 +111,28 @@ activities.controller('main', ['$scope', '$http',
         for(x = 0; x < $selected.length; x++) {
           repoCounts = JSON.parse($selected[x].commits_by_repo);
           for(y = 0; y < repoCounts.length; y++) {
-            newData.push(repoCounts[y]);
+            var added = false;
+
+            for (z=0;z<newData.length;z++) {
+              if (newData[z].name == repoCounts[y].name) {
+                newData[z].count += repoCounts[y].count;
+                added = true;
+                z = newData.length;
+              }
+            }
+
+            if (added == false) {
+              newData.push(repoCounts[y]);
+            }
           }
         }
         // TODO send data to existing pie chart
-        colors = ["#98abc5", "#8a89a6", "#7b6888", "#6b486b", "#a05d56", "#d0743c", "#ff8c00"];
-        new Chart(newData, 250, colors);
+        //colors = ["#98abc5", "#8a89a6", "#7b6888", "#6b486b", "#a05d56", "#d0743c", "#ff8c00"];
+        //new Chart(newData, 250, colors);
+        $repoStats.update(newData);
       }
       $selected = [];
+
       $mousedown = false;
     }
 }]);

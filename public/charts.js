@@ -15,6 +15,19 @@ function Chart(data, size, colors) {
                                      .append('g')
                                      .attr('transform', 'translate('+(size/2)+','+(size/2)+')');
 
+  this.draw(data);
+}
+
+Chart.prototype.update = function (data) {
+  for(x=0;x<data.length;x++) {
+    console.log(data[x].name+': '+data[x].count);
+  }
+  this.svg.selectAll('.arc').remove();
+  this.draw(data);
+}
+
+
+Chart.prototype.draw = function(data) {
   this.g = this.svg.selectAll('.arc').data(this.pie(data))
                                     .enter()
                                     .append('g')
@@ -24,3 +37,5 @@ function Chart(data, size, colors) {
                        .style('fill', function(d) { return colors[Math.floor(Math.random()*colors.length)]; });
 
 }
+
+
