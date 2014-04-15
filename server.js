@@ -143,29 +143,30 @@ function Update(requests) {
     console.log('Queued requests: '+this.queue.length);
 
     req = this.queue.shift()
+    if (req) {
+      if (req.uri.match(/user\/repos/)) {
+        req.type = 'repos';
+      } else if (req.uri.match(/commits\?author/)) {
+        req.type = 'commits';
+      } else if (req.uri.match(/pulls/)) {
+        req.type = 'pulls';
+      } else if (req.uri.match(/\/commits\//)) {
+        req.type = 'commit';
+      }
 
-    if (req.uri.match(/user\/repos/)) {
-      req.type = 'repos';
-    } else if (req.uri.match(/commits\?author/)) {
-      req.type = 'commits';
-    } else if (req.uri.match(/pulls/)) {
-      req.type = 'pulls';
-    } else if (req.uri.match(/\/commits\//)) {
-      req.type = 'commit';
-    }
-
-    if(req && this.preprocess(req)) {
-      console.log('Requesting: '+req.uri);
-      this.request(req.uri, req.page, req.repo);
-      this.idle = 0;
-    } else {
-      console.log('Nothing to process...');
-      this.idle++;
-    }
-    if (this.queue.length == 0 && this.idle > 10) {
-      return false;
-    } else {
-      return true;
+      if (this.preprocess(req)) {
+        console.log('Requesting: '+req.uri);
+        this.request(req.uri, req.page, req.repo);
+        this.idle = 0;
+      } else {
+        console.log('Nothing to process...');
+        this.idle++;
+      }
+      if (this.queue.length == 0 && this.idle > 10) {
+        return false;
+      } else {
+        return true;
+      }
     }
   }
 
