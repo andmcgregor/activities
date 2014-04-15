@@ -110,6 +110,16 @@ function Update() {
         repo: repo
       });
     }
+    for (y = 0; y < commits.length; y++) {
+      this.queue.push({
+        uri: '/repos/'+repo+'/commits/'+commits[y].sha,
+        repo: repo
+      });
+    }
+  }
+
+  this.parseCommit = function(res, data, repo) {
+    
   }
 
   this.parsePulls = function(res, data, repo, page) {
