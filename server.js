@@ -114,24 +114,28 @@ function Update(requests) {
   }
 
   this.preprocess = function(req) {
-    var found = false;
-    for (x = 0; x < this.requests.length; x++) {
-      if (this.requests[x].uri == req.uri) {
-        found = true;
-      }
-    }
-    if (found == true) {
-      console.log('skipping request...');
-      return false;
-    } else {
-      Request.create({
-        uri:  req.uri,
-        page: req.page,
-        repo: req.repo,
-        type: undefined,
-        date: new Date().getTime()
-      });
+    if (req.type == 'repos' || request.type != 'commits') { // testing only
       return true;
+    } else {
+      var found = false;
+      for (x = 0; x < this.requests.length; x++) {
+        if (this.requests[x].uri == req.uri) {
+          found = true;
+        }
+      }
+      if (found == true) {
+        console.log('skipping request...');
+        return false;
+      } else {
+        Request.create({
+          uri:  req.uri,
+          page: req.page,
+          repo: req.repo,
+          type: req.type,
+          date: new Date().getTime()
+        });
+        return true;
+      }
     }
   }
 
@@ -139,6 +143,17 @@ function Update(requests) {
     console.log('Queued requests: '+this.queue.length);
 
     req = this.queue.shift()
+
+    if (req.uri.match(/user\/repos/)) {
+      req.type = 'repos';
+    } else if (req.uri.match(/commits\?author/)) {
+      req.type = 'commits';
+    } else if (req.uri.match(/pulls/)) {
+      req.type = 'pulls';
+    } else if (req.uri.match(/\/commits\//)) {
+      req.type = 'commit';
+    }
+
     if(req && this.preprocess(req)) {
       console.log('Requesting: '+req.uri);
       this.request(req.uri, req.page, req.repo);
