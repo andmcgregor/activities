@@ -61,15 +61,36 @@ app.get('/api/activities', function(req, res) {
   });
 });
 
-app.get('/admin', function() {
+app.get('/api/files', function(req, res) {
+  File.find(function(err, files) {
+    if (err) {
+      res.send(err);
+    }
 
+    var additions = 0;
+    var deletions = 0;
+
+    for(x = 0; x < files.length; x++) {
+      additions += files[x].additions;
+      deletions += files[x].deletions
+    }
+
+    response = {
+      count: files.length,
+      additions: additions,
+      deletions: deletions,
+      files: files
+    }
+
+    res.json(response);
+  });
 });
 
 app.get('/api/update', function(req, res) {
   Request.find(function(err, requests) {
-    if (err) {
-      res.send(err);
-    }
+    //if (err) {
+    //  res.send(err);
+    //}
 
     console.log(requests.length+' saved requests!');
 
@@ -94,7 +115,6 @@ app.get('/api/destroy-requests', function(req, res) {
     res.send('No more requests!');
   })
 });
-
 
 app.get('*', function(req, res) {
   res.sendfile('./public/index.html');
@@ -162,17 +182,11 @@ function Update(requests) {
         console.log('Nothing to process...');
         this.idle++;
       }
-      if (this.queue.length == 0 && this.idle > 40) {
-        return false;
-      } else {
-        return true;
-      }
+    }
+    if (this.queue.length == 0 && this.idle > 40) {
+      return false;
     } else {
-      if (this.queue.length == 0 && this.idle > 40) {
-        return false;
-      } else {
-        return true;
-      }
+      return true;
     }
   }
 
