@@ -57,6 +57,8 @@ function Update() {
           self.parseCommits(res, data, repo);
         } else if (path.match(/pulls/)) {
           self.parsePulls(res, data, repo, page);
+        } else if (path.match(/\/commits\//)) {
+          self.parseCommit(res, data, repo);
         }
       });
     });
@@ -119,7 +121,16 @@ function Update() {
   }
 
   this.parseCommit = function(res, data, repo) {
-    
+    files = [];
+    for (x = 0; x < data.files.length; x++) {
+      files.push({
+        sha: data.sha,
+        filename: data.files[x].filename, // perhaps save language at this point
+        additions: data.files[x].additions,
+        deletions: data.files[x].deletions
+      });
+    }
+    File.create(files);
   }
 
   this.parsePulls = function(res, data, repo, page) {
