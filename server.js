@@ -15,12 +15,13 @@ app.configure(function() {
 });
 
 var Activity = mongoose.model('Activity', {
-  type:    String,
-  date:    { type: Number, unique: true },
-  owner:   String,
-  repo:    String,
-  secret:  Boolean,
-  link:    String
+  type:   String,
+  date:   { type: Number, unique: true },
+  owner:  String,
+  repo:   String,
+  secret: Boolean,
+  link:   String,
+  sha:    String
 });
 
 var update = require('./update.js');

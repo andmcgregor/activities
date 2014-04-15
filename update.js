@@ -97,7 +97,8 @@ function Update() {
         owner: repo.match(/^[^\/]+/)[0],
         repo: repo.match(/[^\/]+$/)[0],
         secret: secret,
-        link: data[x].url
+        link: data[x].url,
+        sha: data[x].sha
       });
     }
     if (commits.length != 0) {
