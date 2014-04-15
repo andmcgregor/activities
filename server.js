@@ -79,7 +79,7 @@ app.get('/api/update', function(req, res) {
         clearInterval(interval);
         res.send('done!');
       }
-    }, 1000);
+    }, 250);
   });
 });
 
@@ -114,7 +114,7 @@ function Update(requests) {
   }
 
   this.preprocess = function(req) {
-    if (req.type == 'repos' || request.type != 'commits') { // testing only
+    if (req.type == 'repos' || req.type == 'commits') { // testing only
       return true;
     } else {
       var found = false;
@@ -142,7 +142,7 @@ function Update(requests) {
   this.process = function() {
     console.log('Queued requests: '+this.queue.length);
 
-    req = this.queue.shift()
+    req = this.queue.pop();
     if (req) {
       if (req.uri.match(/user\/repos/)) {
         req.type = 'repos';
@@ -162,7 +162,13 @@ function Update(requests) {
         console.log('Nothing to process...');
         this.idle++;
       }
-      if (this.queue.length == 0 && this.idle > 10) {
+      if (this.queue.length == 0 && this.idle > 40) {
+        return false;
+      } else {
+        return true;
+      }
+    } else {
+      if (this.queue.length == 0 && this.idle > 40) {
         return false;
       } else {
         return true;
