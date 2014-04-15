@@ -30,7 +30,7 @@ activities.controller('main', ['$scope', '$http',
       }
 
       colors = ["#98abc5", "#8a89a6", "#7b6888", "#6b486b", "#a05d56", "#d0743c", "#ff8c00"];
-      repoStats = new Chart(reposArray, 250, colors);
+      repoStats = new Chart(reposArray, 450, colors);
       $repoStats = repoStats
       $reposArray = reposArray;
     });

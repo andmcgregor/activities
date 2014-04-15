@@ -24,6 +24,13 @@ var Activity = mongoose.model('Activity', {
   sha:    String
 });
 
+var File = mongoose.model('File', {
+  sha:       String,
+  filename:  String,
+  additions: Number,
+  deletions: Number
+});
+
 var update = require('./update.js');
 
 app.listen(8000);
