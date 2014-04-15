@@ -31,6 +31,12 @@ var File = mongoose.model('File', {
   deletions: Number
 });
 
+var Request = mongoose.model('Request', {
+  url:  String,
+  type: String,
+  date: Number
+});
+
 var update = require('./update.js');
 
 app.listen(8000);
