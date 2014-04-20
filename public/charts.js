@@ -22,7 +22,6 @@ function Chart(data, size, colors) {
 }
 
 Chart.prototype.update = function (newData) {
-  console.log(this.data);
   for (x = 0; x < this.data.length; x++) {
     if (newData[this.data[x].name]) {
       this.data[x].count = newData[this.data[x].name];
@@ -30,12 +29,18 @@ Chart.prototype.update = function (newData) {
       this.data[x].count = 0;
     }
   }
-  console.log(this.data);
 
   this.path = this.path.data(this.pie(this.data));
-  this.path.attr('d', this.arc);
-}
 
+  var arc = this.arc;
+  this.path.transition().duration(750).attrTween('d', function(a) {
+    var i = d3.interpolate(this._current, a);
+    this._current = i(0);
+    return function(t) {
+      return arc(i(t));
+    };
+  });
+}
 
 Chart.prototype.draw = function() {
   var t = this;
