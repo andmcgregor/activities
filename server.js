@@ -31,16 +31,25 @@ var File = mongoose.model('File', {
   deletions: Number
 });
 
+var Job = mongoose.model('Job', {
+  type: { type: String, unique: true },
+  due: Date,
+  current: Boolean,
+  queue: Array
+});
+
 var Request = mongoose.model('Request', {
   uri:  String,
   page: Number,
   repo: String,
-  type: String,
-  date: Number
 });
 
 app.listen(8000);
 console.log('Server running at http://127.0.0.1:8000/');
+
+Job.find({}, function(err, jobs) {
+  console.log('Next Update: %s', jobs[0].due);
+});
 
 app.get('/api/activities', function(req, res) {
   Activity.find(function(err, activities) {
@@ -86,36 +95,6 @@ app.get('/api/files', function(req, res) {
   });
 });
 
-app.get('/api/update', function(req, res) {
-  Request.find(function(err, requests) {
-    //if (err) {
-    //  res.send(err);
-    //}
-
-    console.log(requests.length+' saved requests!');
-
-    update = new Update(requests);
-    interval = setInterval(function() {
-      if (!update.process()) {
-        clearInterval(interval);
-        res.send('done!');
-      }
-    }, 250);
-  });
-});
-
-app.get('/api/destroy-activities', function(req, res) {
-  Activity.remove({}, function() {
-    res.send('No more activities');
-  })
-});
-
-app.get('/api/destroy-requests', function(req, res) {
-  Request.remove({}, function() {
-    res.send('No more requests!');
-  })
-});
-
 app.get('*', function(req, res) {
   res.sendfile('./public/index.html');
 });
@@ -123,44 +102,39 @@ app.get('*', function(req, res) {
 // update
 
 Update = function(requests) {
-  this.queue = [];
+  if (requests.length != 0) {
+    this.queue = requests;
+  } else {
+    this.queue = [];
+  }
+
   this.idle = 0;
-  this.requests = requests;
 
   this.init();
+
+  self = this;
+  this.interval = setInterval(function() {
+    if (!self.process()) {
+      clearInterval(self.interval);
+      Job.update({ type: 'update' }, { due: new Date(new Date().getTime() + 86400000) }, {upsert: true}, function(err) {
+        console.log(err);
+      });
+    }
+  }, 250);
+}
+
+Update.prototype.addToQueue = function(req) {
+  Request.create(req);
+  this.queue.push(req);
 }
 
 Update.prototype.init = function() {
-  this.queue.push({
-    uri: '/user/repos?per_page=100',
-    page: 1,
-    repo: null
-  });
-}
-
-Update.prototype.preprocess = function(req) {
-  if (req.type == 'repos' || req.type == 'commits') { // testing only
-    return true;
-  } else {
-    var found = false;
-    for (x = 0; x < this.requests.length; x++) {
-      if (this.requests[x].uri == req.uri) {
-        found = true;
-      }
-    }
-    if (found == true) {
-      console.log('skipping request...');
-      return false;
-    } else {
-      Request.create({
-        uri:  req.uri,
-        page: req.page,
-        repo: req.repo,
-        type: req.type,
-        date: new Date().getTime()
-      });
-      return true;
-    }
+  if (this.queue.length == 0) {
+    this.addToQueue({
+      uri: '/user/repos?per_page=100',
+      page: 1,
+      repo: null
+    });
   }
 }
 
@@ -179,14 +153,12 @@ Update.prototype.process = function() {
       req.type = 'commit';
     }
 
-    if (this.preprocess(req)) {
-      console.log('Requesting: '+req.uri);
-      this.request(req.uri, req.page, req.repo);
-      this.idle = 0;
-    } else {
-      console.log('Nothing to process...');
-      this.idle++;
-    }
+    console.log('Requesting: '+req.uri);
+    this.request(req.uri, req.page, req.repo);
+    this.idle = 0;
+  } else {
+    console.log('Nothing to process...');
+    this.idle++;
   }
   if (this.queue.length == 0 && this.idle > 40) {
     return false;
@@ -225,6 +197,8 @@ Update.prototype.request = function(path, page, repo) {
       } else if (path.match(/\/commits\//)) {
         self.parseCommit(res, data, repo);
       }
+
+      Request.find({ uri: path }).remove().exec();
     });
   });
 
@@ -240,11 +214,11 @@ Update.prototype.parseRepos = function(res, data) {
 
   if (repos.length != 0) {
     for(x = 0; x < repos.length; x++) {
-      this.queue.push({
+      this.addToQueue({
         uri:  '/repos/'+repos[x]+'/commits?author='+config.github_username+'&per_page=100',
         repo: repos[x]
       });
-      this.queue.push({
+      this.addToQueue({
         uri: '/repos/'+repos[x]+'/pulls?state=all&page=1&per_page=100',
         repo: repos[x],
         page: 1
@@ -272,13 +246,13 @@ Update.prototype.parseCommits = function(res, data, repo) {
     Activity.create(commits);
   }
   if (commits.length == 100) {
-    this.queue.push({
+    this.addToQueue({
       uri:  res.headers.link.match(/^<[^>]+>/)[0].replace(/[<>]/g, ''),
       repo: repo
     });
   }
   for (y = 0; y < commits.length; y++) {
-    this.queue.push({
+    this.addToQueue({
       uri: '/repos/'+repo+'/commits/'+commits[y].sha,
       repo: repo
     });
@@ -319,10 +293,38 @@ Update.prototype.parsePulls = function(res, data, repo, page) {
   }
   if (data.length == 100) {
     page++;
-    this.queue.push({
+    this.addToQueue({
       uri: '/repos/'+repo+'/pulls?state=all&page='+page+'&per_page=100',
       repo: repo,
       page: page
     });
   }
 }
+
+// delayed jobs
+
+Jobs = function() {
+  this.fetch();
+}
+
+Jobs.prototype.fetch = function() {
+  Job.find({ type: 'update' }, function(err, jobs) {
+    if (jobs.length) {
+      setTimeout(function() {
+        Request.find({}, function(err, requests) {
+          new Update(requests);
+        });
+      }, jobs[0].due - Date.now());
+    } else {
+      Job.create({
+        type: 'update',
+        due: new Date(),
+        inProgress: false
+      });
+    }
+  });
+}
+
+new Jobs;
+
+
