@@ -43,10 +43,15 @@ Chart.prototype.draw = function(data) {
 Chart.prototype.label = function(data) {
   var t = this;
   this.arcs.append('svg:text').attr('transform', function(d) {
-    return 'translate('+t.arc.centroid(d)+')';
+    var c = t.arc.centroid(d),
+        x = c[0],
+        y = c[1],
+        h = Math.sqrt(x * x + y * y),
+        r = 150;
+    return 'translate('+ (x/h * r) + ',' + (y/h * r) + ')';
   })
-    .attr('text-anchor', 'middle')
-    .text(function(d, i) { return data[i].name; });
+  .attr('text-anchor', 'middle')
+  .text(function(d, i) { return data[i].name; });
 }
 
 
