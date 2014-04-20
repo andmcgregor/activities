@@ -6,7 +6,6 @@ function Chart(data, size, colors) {
                    .innerRadius(0);
 
   this.pie = d3.layout.pie()
-                      .sort(null)
                       .value(function(d) { return d.count; });
 
   this.svg = d3.select('.activities').append('svg')
