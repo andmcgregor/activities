@@ -107,22 +107,15 @@ activities.controller('main', ['$scope', '$http',
         for(x = 0; x < $reposArray.length; x++) {
           $reposArray[x].count = 0;
         }
-        newData = [];
+        newData = {};
         for(x = 0; x < $selected.length; x++) {
           repoCounts = JSON.parse($selected[x].commits_by_repo);
           for(y = 0; y < repoCounts.length; y++) {
-            var added = false;
-
-            for (z=0;z<newData.length;z++) {
-              if (newData[z].name == repoCounts[y].name) {
-                newData[z].count += repoCounts[y].count;
-                added = true;
-                z = newData.length;
-              }
-            }
-
-            if (added == false) {
-              newData.push(repoCounts[y]);
+            var name = repoCounts[y].name
+            if (newData[name]) {
+              newData[name] += repoCounts[y].count;
+            } else {
+              newData[name] = repoCounts[y].count;
             }
           }
         }

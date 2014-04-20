@@ -1,5 +1,8 @@
 function Chart(data, size, colors) {
+  this.data = data;
   this.radius = Math.min(size, size) / 2;
+
+  this.color = d3.scale.category20();
 
   this.arc = d3.svg.arc()
                    .outerRadius(this.radius - 100)
@@ -14,29 +17,34 @@ function Chart(data, size, colors) {
                                      .append('g')
                                      .attr('transform', 'translate('+(size/2)+','+(size/2)+')');
 
-  this.draw(data);
-  this.label(data);
+  this.draw();
+  //this.label(data);
 }
 
-Chart.prototype.update = function (data) {
-  //for(x=0;x<data.length;x++) {
-  //  console.log(data[x].name+': '+data[x].count);
-  //}
+Chart.prototype.update = function (newData) {
+  console.log(this.data);
+  for (x = 0; x < this.data.length; x++) {
+    if (newData[this.data[x].name]) {
+      this.data[x].count = newData[this.data[x].name];
+    } else {
+      this.data[x].count = 0;
+    }
+  }
+  console.log(this.data);
 
-  this.svg.selectAll('.arc').remove();
-  this.draw(data);
-  this.label(data);
+  this.path = this.path.data(this.pie(this.data));
+  this.path.attr('d', this.arc);
 }
 
 
-Chart.prototype.draw = function(data) {
-  this.arcs = this.svg.selectAll('.arc').data(this.pie(data))
-                                    .enter()
-                                    .append('g')
-                                    .attr('class', 'arc');
+Chart.prototype.draw = function() {
+  var t = this;
+  this.path = this.svg.datum(this.data).selectAll('path').data(this.pie)
+                                               .enter().append('path')
+                                               .attr('fill', function(d, i) { return t.color(i); })
+                                               .attr('d', this.arc)
+                                               .each(function(d) { this._current = d; });
 
-  this.arcs.append('path').attr('d', this.arc)
-                       .style('fill', function(d) { return colors[Math.floor(Math.random()*colors.length)]; });
 }
 
 Chart.prototype.label = function(data) {
@@ -52,5 +60,3 @@ Chart.prototype.label = function(data) {
   .attr('text-anchor', 'middle')
   .text(function(d, i) { return data[i].name; });
 }
-
-
