@@ -102,6 +102,7 @@ activities.controller('main', ['$scope', '$http',
       $('.select').hide();
       if($selected.length == 0) {
         $('rect').css('opacity', '1');
+        $repoStats.reset();
       } else {
         // reset counts
         for(x = 0; x < $reposArray.length; x++) {

@@ -1,5 +1,7 @@
 function Chart(data, size, colors) {
-  this.data = data;
+  this.data = JSON.parse(JSON.stringify(data));
+  this.newData = data;
+
   this.radius = Math.min(size, size) / 2;
 
   this.color = d3.scale.category20();
@@ -22,36 +24,53 @@ function Chart(data, size, colors) {
 }
 
 Chart.prototype.update = function (newData) {
-  for (x = 0; x < this.data.length; x++) {
-    if (newData[this.data[x].name]) {
-      this.data[x].count = newData[this.data[x].name];
-      $('[id="'+window.btoa(this.data[x].name)+'"]').show()
-    } else {
-      this.data[x].count = 0;
-      $('[id="'+window.btoa(this.data[x].name)+'"]').hide()
+  var total = 0;
+  if (!(newData instanceof Array)) {
+    for (x = 0; x < this.newData.length; x++) {
+      if (newData[this.newData[x].name]) {
+        this.newData[x].count = newData[this.newData[x].name];
+        $('[id="'+window.btoa(this.newData[x].name)+'"]').show();
+        total++;
+      } else {
+        this.newData[x].count = 0;
+        $('[id="'+window.btoa(this.newData[x].name)+'"]').hide();
+      }
     }
+  } else {
+    this.newData = JSON.parse(JSON.stringify(newData));
+    $('.activities text').show();
+    total = 1;
   }
 
-  this.arcs = this.arcs.data(this.pie(this.data));
-  this.labels = this.labels.data(this.pie(this.data));
+  if (total != 0) {
+    $('.activities path').show();
+    this.arcs = this.arcs.data(this.pie(this.newData));
+    this.labels = this.labels.data(this.pie(this.newData));
 
-  var arc = this.arc;
-  this.arcs.transition().duration(750).attrTween('d', function(a) {
-    var i = d3.interpolate(this._current, a);
-    this._current = i(0);
-    return function(t) {
-      return arc(i(t));
-    };
-  });
+    var arc = this.arc;
+    this.arcs.transition().duration(750).attrTween('d', function(a) {
+      var i = d3.interpolate(this._current, a);
+      this._current = i(0);
+      return function(t) {
+        return arc(i(t));
+      };
+    });
 
-  this.labels.transition().duration(750).attr('transform', function(d) {
-    var c = arc.centroid(d),
-        x = c[0],
-        y = c[1],
-        h = Math.sqrt(x * x + y * y),
-        r = 150;
-    return 'translate('+ (x/h * r) + ',' + (y/h * r) + ')';
-  });
+    this.labels.transition().duration(750).attr('transform', function(d) {
+      var c = arc.centroid(d),
+          x = c[0],
+          y = c[1],
+          h = Math.sqrt(x * x + y * y),
+          r = 150;
+      return 'translate('+ (x/h * r) + ',' + (y/h * r) + ')';
+    });
+  } else {
+    $('.activities path').hide();
+  }
+}
+
+Chart.prototype.reset = function() {
+  this.update(this.data);
 }
 
 Chart.prototype.draw = function() {
