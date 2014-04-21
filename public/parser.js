@@ -1,4 +1,4 @@
-function Parser(activities) {
+function ActivityParser(activities) {
   // data.activities
   // array
   // id, date, link, owner, repo, secret, type
@@ -146,4 +146,16 @@ function Parser(activities) {
 
   this.totals = totals;
   this.repos = repos;
+}
+
+function LangParser(files) {
+  languages = {};
+  for(x = 0; x < files.length; x++) {
+    if (languages[files[x].lang]) {
+      languages[files[x].lang] = languages[files[x].lang] + files[x].ad + files[x].de;
+    } else {
+      languages[files[x].lang] = files[x].ad + files[x].de;
+    }
+  }
+  this.languages = languages;
 }

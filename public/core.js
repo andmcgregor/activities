@@ -6,7 +6,7 @@ var activities = angular.module('activities', []);
 activities.controller('main', ['$scope', '$http',
   function($scope, $http) {
     $http.get('/api/activities').success(function(data) {
-      var parsed = new Parser(data.activities);
+      var parsed = new ActivityParser(data.activities);
       $scope.cells = parsed.cells;
       $scope.repos = parsed.repos;
       $scope.totals = parsed.totals;
@@ -29,10 +29,23 @@ activities.controller('main', ['$scope', '$http',
         reposArray.push({name: repo, count: parsed.repos[repo]});
       }
 
-      colors = ["#98abc5", "#8a89a6", "#7b6888", "#6b486b", "#a05d56", "#d0743c", "#ff8c00"];
-      repoStats = new Chart(reposArray, 450, colors);
+      repoStats = new Chart(reposArray, 450);
       $repoStats = repoStats
       $reposArray = reposArray;
+    });
+
+    $http.get('/api/files').success(function(data) {
+      var parsed = new LangParser(data.files);
+      $scope.count = data.count;
+      $scope.additions = data.additions;
+      $scope.deletions = data.deletions;
+      $scope.files = data.files;
+
+      // move to parser
+      langArray = [];
+      for (var lang in parsed.languages)
+        langArray.push({name: lang, count: parsed.languages[lang]});
+      langStats = new Chart(langArray, 450);
     });
 
     $scope.dayHover = function(day, event) {

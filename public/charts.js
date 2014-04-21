@@ -1,4 +1,4 @@
-function Chart(data, size, colors) {
+function Chart(data, size) {
   this.data = JSON.parse(JSON.stringify(data));
   this.newData = data;
 

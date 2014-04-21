@@ -58,11 +58,11 @@ app.get('/api/activities', function(req, res) {
     }
 
     response = {
-      "activities": activities,
-      "content": {
-        "title":  config.title,
-        "intro":  config.intro,
-        "social": config.social
+      activities: activities,
+      content: {
+        title:  config.title,
+        intro:  config.intro,
+        social: config.social
       }
     };
 
@@ -78,17 +78,63 @@ app.get('/api/files', function(req, res) {
 
     var additions = 0;
     var deletions = 0;
+    var res_files = [];
 
     for(x = 0; x < files.length; x++) {
       additions += files[x].additions;
-      deletions += files[x].deletions
+      deletions += files[x].deletions;
+      filename = files[x].filename;
+      switch (true) {
+        case /\.rb$|\.ru$|\.ruby|\.Gemfile/.test(filename):
+          var language = 'ruby';
+          break;
+        case /\.js$/.test(filename):
+          var language = 'javascript';
+          break;
+        case /\.coffee$/.test(filename):
+          var language = 'coffeescript';
+          break;
+        case /\.html$|\.htm$/.test(filename):
+          var language = 'html';
+          break;
+        case /\.haml$|\.hamlc$/.test(filename):
+          var language = 'haml';
+          break;
+        case /\.css$/.test(filename):
+          var language = 'css';
+          break;
+        case /\.scss$|\.sass$/.test(filename):
+          var language = 'sass';
+          break;
+        case /\.erb$/.test(filename):
+          var language = 'erb';
+          break;
+        case /\.yaml$|\.yml$/.test(filename):
+          var language = 'yaml';
+          break;
+        case /\.lua$/.test(filename):
+          var language = 'lua';
+          break;
+        case /\.c$/.test(filename):
+          var language = 'c';
+          break;
+        case /\.cpp$/.test(filename):
+          var language = 'cpp';
+          break;
+        case /\.spec$/.test(filename):
+          var language = 'rspec';
+          break;
+        default:
+          var language = 'other';
+      }
+      res_files.push({sha: files[x].sha, lang: language, ad: files[x].additions, de: files[x].deletions});
     }
 
     response = {
       count: files.length,
       additions: additions,
       deletions: deletions,
-      files: files
+      files: res_files
     }
 
     res.json(response);
