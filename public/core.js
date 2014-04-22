@@ -42,7 +42,7 @@ activities.controller('main', ['$scope', '$http',
         for (var lang in parsed.languages)
           langArray.push({name: lang, count: parsed.languages[lang]});
         langStats = new Chart(langArray, 450);
-        $langStats = langstats;
+        $langStats = langStats;
       });
     });
 
@@ -136,9 +136,9 @@ activities.controller('main', ['$scope', '$http',
           langs = JSON.parse($selected[x].lang_per_cell);
           for (var lang in langs) {
             if (newLangData[lang]) {
-              newLangData[lang] = newLangData[lang] + lang[lang];
+              newLangData[lang] = newLangData[lang] + langs[lang];
             } else {
-              newLangData[lang] = lang[lang];
+              newLangData[lang] = langs[lang];
             }
           }
         }
