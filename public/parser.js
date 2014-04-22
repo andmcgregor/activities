@@ -1,24 +1,4 @@
-function ActivityParser(activities) {
-  // data.activities
-  // array
-  // id, date, link, owner, repo, secret, type
-
-  // days
-  // array
-  // color, commit_num, date, end, secret, start, x, y
-  //    commits_by_repo
-  //    string json
-  //    {name, count} of each repo in day
-
-  // $rectsXoord
-  // array
-  // id, x, y
-  // TODO: switch to just using days
-
-  // scope.totals
-  // object containing number of commits, pulls and repos
-  // TODO: calculate totals at the same time as days
-
+function Parser(activities, files) {
   var cell_size = 20;
   var space_size = 2;
 
@@ -37,7 +17,8 @@ function ActivityParser(activities) {
 
   var cells = Array(365);
 
-  for(x = 0; x < cells.length; x++) {
+  // add repo sha's to cells
+  for (x = 0; x < cells.length; x++) {
     if (current_day > 6) {
       current_x = current_x + space_size + cell_size;
       current_y = space_size;
@@ -46,26 +27,29 @@ function ActivityParser(activities) {
 
     var secret = false;
     var commitsByRepo = [];
+    var shas = [];
 
-    for(y = 0; y < activities.length; y++) {
-      if(activities[y].date > seconds && activities[y].date < seconds + 86400) {
+    for (y = 0; y < activities.length; y++) {
+      if (activities[y].date > seconds && activities[y].date < seconds + 86400) {
         commit_num++;
         var name = activities[y].owner+'/'+activities[y].repo;
         var found = false;
-        for(z = 0; z < commitsByRepo.length; z++) {
-          if(commitsByRepo[z].name == name) {
+        for (z = 0; z < commitsByRepo.length; z++) {
+          if (commitsByRepo[z].name == name) {
             commitsByRepo[z].count++;
             found = true;
           }
         }
         if (found == false) {
+          if (activities[y].sha)
+            shas.push(activities[y].sha);
           commitsByRepo.push({
             name: name,
             count: 1
           });
         }
 
-        if(activities[y].secret == true) {
+        if (activities[y].secret == true) {
           secret = true;
         }
       }
@@ -81,6 +65,7 @@ function ActivityParser(activities) {
       date: date.toString(),
       commit_num: commit_num,
       commits_by_repo: JSON.stringify(commitsByRepo),
+      shas: shas,
       secret: secret
     };
 
@@ -90,6 +75,41 @@ function ActivityParser(activities) {
     seconds = seconds + 86400;
     current_day++;
     commit_num = 0;
+  }
+
+  // makes hash with sha keys
+  langPerSha = {};
+  for (x = 0; x < files.length; x++) {
+    lang = files[x].lang;
+    changes = files[x].ad + files[x].de;
+    sha = files[x].sha;
+
+    if (langPerSha[sha]) {
+      if (langPerSha[sha][lang]) {
+        langPerSha[sha][lang] = langPerSha[sha][lang] + changes;
+      } else {
+        langPerSha[sha][lang] = changes;
+      }
+    } else {
+      langPerSha[sha] = {};
+      langPerSha[sha][lang] = changes;
+    }
+  }
+
+  // add language stats to cells
+  for (x = 0; x < cells.length; x++) {
+    languages = {};
+    for (y = 0; y < cells[x].shas.length; y++) {
+      shaLang = langPerSha[cells[x].shas[y]];
+      for (var lang in shaLang) {
+        if (languages[lang]) {
+          languages[lang] = languages[lang] + shaLang[lang];
+        } else {
+          languages[lang] = shaLang[lang];
+        }
+      }
+    }
+    cells[x].lang_per_cell = JSON.stringify(languages);
   }
 
   // calculate color values
@@ -146,9 +166,7 @@ function ActivityParser(activities) {
 
   this.totals = totals;
   this.repos = repos;
-}
 
-function LangParser(files) {
   languages = {};
   for(x = 0; x < files.length; x++) {
     if (languages[files[x].lang]) {

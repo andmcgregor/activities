@@ -5,47 +5,44 @@ var activities = angular.module('activities', []);
 
 activities.controller('main', ['$scope', '$http',
   function($scope, $http) {
-    $http.get('/api/activities').success(function(data) {
-      var parsed = new ActivityParser(data.activities);
-      $scope.cells = parsed.cells;
-      $scope.repos = parsed.repos;
-      $scope.totals = parsed.totals;
-      $scope.content = data.content;
+    $http.get('/api/activities').success(function(x) {
+      $http.get('/api/files').success(function(y) {
+        var parsed = new Parser(x.activities, y.files);
+        $scope.cells = parsed.cells;
+        $scope.repos = parsed.repos;
+        $scope.totals = parsed.totals;
+        $scope.content = x.content;
 
-      // calculates x/y offsets once svg is drawn
-      // TODO don't assume cells are drawn in < 3 seconds
-      setTimeout(function() {
-        for(x = 0; x < $scope.cells.length; x++) {
-          el = $('rect[data-start="'+$scope.cells[x].start+'"]');
-          $scope.cells[x].offsetX = el.offset().left;
-          $scope.cells[x].offsetY = el.offset().top;
+        // calculates x/y offsets once svg is drawn
+        // TODO don't assume cells are drawn in < 3 seconds
+        setTimeout(function() {
+          for(x = 0; x < $scope.cells.length; x++) {
+            el = $('rect[data-start="'+$scope.cells[x].start+'"]');
+            $scope.cells[x].offsetX = el.offset().left;
+            $scope.cells[x].offsetY = el.offset().top;
+          }
+          console.log('rectsXoord loaded');
+        }, 3000);
+
+        // adds pie chart
+        reposArray = [];
+        for (var repo in parsed.repos) {
+          reposArray.push({name: repo, count: parsed.repos[repo]});
         }
-        console.log('rectsXoord loaded');
-      }, 3000);
 
-      // adds pie chart
-      reposArray = [];
-      for (var repo in parsed.repos) {
-        reposArray.push({name: repo, count: parsed.repos[repo]});
-      }
+        repoStats = new Chart(reposArray, 450);
+        $repoStats = repoStats
+        $reposArray = reposArray;
 
-      repoStats = new Chart(reposArray, 450);
-      $repoStats = repoStats
-      $reposArray = reposArray;
-    });
+        $scope.count = y.files.count;
+        $scope.additions = y.additions;
+        $scope.deletions = y.deletions;
 
-    $http.get('/api/files').success(function(data) {
-      var parsed = new LangParser(data.files);
-      $scope.count = data.count;
-      $scope.additions = data.additions;
-      $scope.deletions = data.deletions;
-      $scope.files = data.files;
-
-      // move to parser
-      langArray = [];
-      for (var lang in parsed.languages)
-        langArray.push({name: lang, count: parsed.languages[lang]});
-      langStats = new Chart(langArray, 450);
+        langArray = [];
+        for (var lang in parsed.languages)
+          langArray.push({name: lang, count: parsed.languages[lang]});
+        langStats = new Chart(langArray, 450);
+      });
     });
 
     $scope.dayHover = function(day, event) {
