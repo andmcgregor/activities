@@ -31,7 +31,7 @@ activities.controller('main', ['$scope', '$http',
         }
 
         repoStats = new Chart(reposArray, 450);
-        $repoStats = repoStats
+        $repoStats = repoStats;
         $reposArray = reposArray;
 
         $scope.count = y.files.count;
@@ -42,6 +42,7 @@ activities.controller('main', ['$scope', '$http',
         for (var lang in parsed.languages)
           langArray.push({name: lang, count: parsed.languages[lang]});
         langStats = new Chart(langArray, 450);
+        $langStats = langstats;
       });
     });
 
@@ -90,7 +91,7 @@ activities.controller('main', ['$scope', '$http',
         select.css({width: absWidth, height: absHeight});
         $('rect').css('opacity', '0.1');
 
-        for(i = 0; i < $scope.cells.length; i++) {
+        for (i = 0; i < $scope.cells.length; i++) {
           xc = $scope.cells[i].offsetX + 10;
           yc = $scope.cells[i].offsetY + 10;
 
@@ -118,22 +119,31 @@ activities.controller('main', ['$scope', '$http',
         for(x = 0; x < $reposArray.length; x++) {
           $reposArray[x].count = 0;
         }
-        newData = {};
-        for(x = 0; x < $selected.length; x++) {
+        newRepoData = {};
+        for (x = 0; x < $selected.length; x++) {
           repoCounts = JSON.parse($selected[x].commits_by_repo);
-          for(y = 0; y < repoCounts.length; y++) {
+          for (y = 0; y < repoCounts.length; y++) {
             var name = repoCounts[y].name
-            if (newData[name]) {
-              newData[name] += repoCounts[y].count;
+            if (newRepoData[name]) {
+              newRepoData[name] += repoCounts[y].count;
             } else {
-              newData[name] = repoCounts[y].count;
+              newRepoData[name] = repoCounts[y].count;
             }
           }
         }
-        // TODO send data to existing pie chart
-        //colors = ["#98abc5", "#8a89a6", "#7b6888", "#6b486b", "#a05d56", "#d0743c", "#ff8c00"];
-        //new Chart(newData, 250, colors);
-        $repoStats.update(newData);
+        newLangData = {};
+        for (x = 0; x < $selected.length; x++) {
+          langs = JSON.parse($selected[x].lang_per_cell);
+          for (var lang in langs) {
+            if (newLangData[lang]) {
+              newLangData[lang] = newLangData[lang] + lang[lang];
+            } else {
+              newLangData[lang] = lang[lang];
+            }
+          }
+        }
+        $langStats.update(newLangData);
+        $repoStats.update(newRepoData);
       }
       $selected = [];
 
