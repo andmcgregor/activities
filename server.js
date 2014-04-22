@@ -51,94 +51,106 @@ Job.find({}, function(err, jobs) {
   console.log('Next Update: %s', jobs[0].due);
 });
 
+$cache = {};
+
 app.get('/api/activities', function(req, res) {
-  Activity.find(function(err, activities) {
-    if (err) {
-      res.send(err);
-    }
-
-    response = {
-      activities: activities,
-      content: {
-        title:  config.title,
-        intro:  config.intro,
-        social: config.social
+  if ($cache.activities) {
+    res.json($cache.activities);
+  } else {
+    Activity.find(function(err, activities) {
+      if (err) {
+        res.send(err);
       }
-    };
 
-    res.json(response);
-  });
+      response = {
+        activities: activities,
+        content: {
+          title:  config.title,
+          intro:  config.intro,
+          social: config.social
+        }
+      };
+
+      $cache.activities = response;
+      res.json(response);
+    });
+  }
 });
 
 app.get('/api/files', function(req, res) {
-  File.find(function(err, files) {
-    if (err) {
-      res.send(err);
-    }
-
-    var additions = 0;
-    var deletions = 0;
-    var res_files = [];
-
-    for(x = 0; x < files.length; x++) {
-      additions += files[x].additions;
-      deletions += files[x].deletions;
-      filename = files[x].filename;
-      switch (true) {
-        case /\.rb$|\.ru$|\.ruby|\.Gemfile/.test(filename):
-          var language = 'ruby';
-          break;
-        case /\.js$/.test(filename):
-          var language = 'javascript';
-          break;
-        case /\.coffee$/.test(filename):
-          var language = 'coffeescript';
-          break;
-        case /\.html$|\.htm$/.test(filename):
-          var language = 'html';
-          break;
-        case /\.haml$|\.hamlc$/.test(filename):
-          var language = 'haml';
-          break;
-        case /\.css$/.test(filename):
-          var language = 'css';
-          break;
-        case /\.scss$|\.sass$/.test(filename):
-          var language = 'sass';
-          break;
-        case /\.erb$/.test(filename):
-          var language = 'erb';
-          break;
-        case /\.yaml$|\.yml$/.test(filename):
-          var language = 'yaml';
-          break;
-        case /\.lua$/.test(filename):
-          var language = 'lua';
-          break;
-        case /\.c$/.test(filename):
-          var language = 'c';
-          break;
-        case /\.cpp$/.test(filename):
-          var language = 'cpp';
-          break;
-        case /\.spec$/.test(filename):
-          var language = 'rspec';
-          break;
-        default:
-          var language = 'other';
+  if ($cache.files) {
+    res.json($cache.files);
+  } else {
+    File.find(function(err, files) {
+      if (err) {
+        res.send(err);
       }
-      res_files.push({sha: files[x].sha, lang: language, ad: files[x].additions, de: files[x].deletions});
-    }
 
-    response = {
-      count: files.length,
-      additions: additions,
-      deletions: deletions,
-      files: res_files
-    }
+      var additions = 0;
+      var deletions = 0;
+      var res_files = [];
 
-    res.json(response);
-  });
+      for(x = 0; x < files.length; x++) {
+        additions += files[x].additions;
+        deletions += files[x].deletions;
+        filename = files[x].filename;
+        switch (true) {
+          case /\.rb$|\.ru$|\.ruby|\.Gemfile/.test(filename):
+            var language = 'ruby';
+            break;
+          case /\.js$/.test(filename):
+            var language = 'javascript';
+            break;
+          case /\.coffee$/.test(filename):
+            var language = 'coffeescript';
+            break;
+          case /\.html$|\.htm$/.test(filename):
+            var language = 'html';
+            break;
+          case /\.haml$|\.hamlc$/.test(filename):
+            var language = 'haml';
+            break;
+          case /\.css$/.test(filename):
+            var language = 'css';
+            break;
+          case /\.scss$|\.sass$/.test(filename):
+            var language = 'sass';
+            break;
+          case /\.erb$/.test(filename):
+            var language = 'erb';
+            break;
+          case /\.yaml$|\.yml$/.test(filename):
+            var language = 'yaml';
+            break;
+          case /\.lua$/.test(filename):
+            var language = 'lua';
+            break;
+          case /\.c$/.test(filename):
+            var language = 'c';
+            break;
+          case /\.cpp$/.test(filename):
+            var language = 'cpp';
+            break;
+          case /\.spec$/.test(filename):
+            var language = 'rspec';
+            break;
+          default:
+            var language = 'other';
+        }
+        res_files.push({sha: files[x].sha, lang: language, ad: files[x].additions, de: files[x].deletions});
+      }
+
+      response = {
+        count: files.length,
+        additions: additions,
+        deletions: deletions,
+        files: res_files
+      }
+
+      $cache.files = response;
+      res.json(response);
+    });
+  }
 });
 
 app.get('*', function(req, res) {
