@@ -125,7 +125,6 @@ activities.controller('main', ['$scope', '$http',
     }
 
     $scope.daySelectEnd = function(event) {
-      event.preventDefault();
       $('.select').hide();
       if($selected.length == 0) {
         $('rect').css('opacity', '1');
@@ -177,8 +176,10 @@ activities.controller('main', ['$scope', '$http',
         if (langRegex.test(cell.lang_per_cell)) {
           $('rect[data-start="'+cell.start+'"]').css('opacity', '1');
           langs = JSON.parse(cell.lang_per_cell)
+          $selected.push(cell);
         }
       }
+      $scope.daySelectEnd(null);
     }
 }]);
 
