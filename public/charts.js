@@ -1,4 +1,5 @@
-function Chart(data, size) {
+function Chart(data, size, name) {
+  this.name = name;
   this.data = JSON.parse(JSON.stringify(data));
   this.newData = data;
 
@@ -23,7 +24,33 @@ function Chart(data, size) {
   this.label();
 }
 
-Chart.prototype.update = function (newData) {
+Chart.prototype.update = function (selected) {
+  newData = {};
+  if (this.name == 'repo') {
+    for (x = 0; x < selected.length; x++) {
+      repoCounts = JSON.parse(selected[x].commits_by_repo);
+      for (y = 0; y < repoCounts.length; y++) {
+        var name = repoCounts[y].name
+        if (newData[name]) {
+          newData[name] += repoCounts[y].count;
+        } else {
+          newData[name] = repoCounts[y].count;
+        }
+      }
+    }
+  } else if (this.name == 'lang') {
+    for (x = 0; x < selected.length; x++) {
+      langs = JSON.parse(selected[x].lang_per_cell);
+      for (var lang in langs) {
+        if (newData[lang]) {
+          newData[lang] = newData[lang] + langs[lang];
+        } else {
+          newData[lang] = langs[lang];
+        }
+      }
+    }
+  }
+
   var total = 0;
   if (!(newData instanceof Array)) {
     for (x = 0; x < this.newData.length; x++) {

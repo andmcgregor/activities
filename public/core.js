@@ -30,7 +30,7 @@ activities.controller('main', ['$scope', '$http',
           reposArray.push({name: repo, count: parsed.repos[repo]});
         }
 
-        repoStats = new Chart(reposArray, 450);
+        repoStats = new Chart(reposArray, 450, 'repo');
         $repoStats = repoStats;
         $reposArray = reposArray;
 
@@ -41,23 +41,15 @@ activities.controller('main', ['$scope', '$http',
         langArray = [];
         for (var lang in parsed.languages)
           langArray.push({name: lang, count: parsed.languages[lang]});
-        langStats = new Chart(langArray, 450);
+        langStats = new Chart(langArray, 450, 'lang');
         $langStats = langStats;
       });
     });
 
     $scope.dayClick = function(day, event) {
-      newRepoData = {};
-      repos = JSON.parse(day.commits_by_repo);
-      for (x = 0; x < repos.length; x++) {
-        var name = repos[x].name
-        newRepoData[name] = repos[x].count;
-      }
-
-      langs = JSON.parse(day.lang_per_cell);
-
-      $langStats.update(langs);
-      $repoStats.update(newRepoData);
+      $selected.push(day);
+      $langStats.update($selected);
+      $repoStats.update($selected);
 
     }
 
@@ -135,31 +127,8 @@ activities.controller('main', ['$scope', '$http',
         for(x = 0; x < $reposArray.length; x++) {
           $reposArray[x].count = 0;
         }
-        newRepoData = {};
-        for (x = 0; x < $selected.length; x++) {
-          repoCounts = JSON.parse($selected[x].commits_by_repo);
-          for (y = 0; y < repoCounts.length; y++) {
-            var name = repoCounts[y].name
-            if (newRepoData[name]) {
-              newRepoData[name] += repoCounts[y].count;
-            } else {
-              newRepoData[name] = repoCounts[y].count;
-            }
-          }
-        }
-        newLangData = {};
-        for (x = 0; x < $selected.length; x++) {
-          langs = JSON.parse($selected[x].lang_per_cell);
-          for (var lang in langs) {
-            if (newLangData[lang]) {
-              newLangData[lang] = newLangData[lang] + langs[lang];
-            } else {
-              newLangData[lang] = langs[lang];
-            }
-          }
-        }
-        $langStats.update(newLangData);
-        $repoStats.update(newRepoData);
+        $langStats.update($selected);
+        $repoStats.update($selected);
       }
       $selected = [];
 
