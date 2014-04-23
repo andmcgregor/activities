@@ -13,9 +13,17 @@ html, body {
 .title,
 .intro,
 .social {
-  width: 700px;
+  width: 900px;
   margin: 25px auto;
   text-align: center;
+}
+
+.additions {
+  color: #00AF33;
+}
+
+.deletions {
+  color: #FF0000;
 }
 
 .social a {

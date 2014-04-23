@@ -34,7 +34,7 @@ activities.controller('main', ['$scope', '$http',
         $repoStats = repoStats;
         $reposArray = reposArray;
 
-        $scope.count = y.files.count;
+        $scope.count = y.files.length;
         $scope.additions = y.additions;
         $scope.deletions = y.deletions;
 
@@ -114,6 +114,7 @@ activities.controller('main', ['$scope', '$http',
       if($selected.length == 0) {
         $('rect').css('opacity', '1');
         $repoStats.reset();
+        $langStats.reset();
       } else {
         // reset counts
         for(x = 0; x < $reposArray.length; x++) {

@@ -28,7 +28,7 @@
       <a ng-attr-href="{{link.href}}" ng-repeat="link in content.social">{{link.title}}</a>
     </div>
     <div class="stats">
-      <p>I've published {{totals.commits}} commits across {{totals.pulls}} pull requests in {{totals.repos}} repos.</p>
+      <p>I've pushed {{totals.commits}} commits, containing <span class="additions">{{additions}}</span> additions and <span class="deletions">{{deletions}}</span> deletions, across {{totals.pulls}} pull requests in {{totals.repos}} repos.</p>
     </div>
     <div class="activities"> 
       <svg width="1169px" height="156px">
