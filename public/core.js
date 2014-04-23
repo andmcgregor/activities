@@ -46,6 +46,21 @@ activities.controller('main', ['$scope', '$http',
       });
     });
 
+    $scope.dayClick = function(day, event) {
+      newRepoData = {};
+      repos = JSON.parse(day.commits_by_repo);
+      for (x = 0; x < repos.length; x++) {
+        var name = repos[x].name
+        newRepoData[name] = repos[x].count;
+      }
+
+      langs = JSON.parse(day.lang_per_cell);
+
+      $langStats.update(langs);
+      $repoStats.update(newRepoData);
+
+    }
+
     $scope.dayHover = function(day, event) {
       if (!$mousedown) {
         $('.hover').html(day.commit_num+' contributions on '+day.date);
@@ -62,16 +77,17 @@ activities.controller('main', ['$scope', '$http',
     }
 
     $scope.daySelectBegin = function(event) {
-      event.preventDefault();
-      $mousedown = true;
+      if (!(event.target.nodeName == 'rect')) {
+        $mousedown = true;
 
-      $('rect').css('opacity', '0.1');
+        $('rect').css('opacity', '0.1');
 
-      $('.select').show();
-      $('.select').css('width', '1px', 'height', '1px');
-      $('.select').offset({top: event.clientY, left: event.clientX});
-      $('.select').data('top', event.clientY);
-      $('.select').data('left', event.clientX);
+        $('.select').show();
+        $('.select').css('width', '1px', 'height', '1px');
+        $('.select').offset({top: event.clientY, left: event.clientX});
+        $('.select').data('top', event.clientY);
+        $('.select').data('left', event.clientX);
+      }
     }
 
     $scope.daySelecting = function(event) {
