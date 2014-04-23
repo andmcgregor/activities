@@ -77,7 +77,7 @@ activities.controller('main', ['$scope', '$http',
     }
 
     $scope.daySelectBegin = function(event) {
-      if (!(event.target.nodeName == 'rect')) {
+      if (event.target.nodeName != 'rect' && event.target.nodeName != 'A') {
         $mousedown = true;
 
         $('rect').css('opacity', '0.1');
@@ -165,6 +165,20 @@ activities.controller('main', ['$scope', '$http',
       $selected = [];
 
       $mousedown = false;
+    }
+
+    $scope.langSelect = function(lang, event) {
+      $('rect').css('opacity', '0.1');
+      langRegex = new RegExp(lang);
+      newLangData = {};
+      newRepoData = {};
+      for (x = 0; x < $scope.cells.length; x++) {
+        var cell = $scope.cells[x];
+        if (langRegex.test(cell.lang_per_cell)) {
+          $('rect[data-start="'+cell.start+'"]').css('opacity', '1');
+          langs = JSON.parse(cell.lang_per_cell)
+        }
+      }
     }
 }]);
 
