@@ -1,4 +1,5 @@
 $mousedown = false;
+$notSelecting = false;
 $selected = [];
 
 var activities = angular.module('activities', []);
@@ -79,6 +80,8 @@ activities.controller('main', ['$scope', '$http',
         $('.select').offset({top: event.clientY, left: event.clientX});
         $('.select').data('top', event.clientY);
         $('.select').data('left', event.clientX);
+      } else {
+        $notSelecting = true;
       }
     }
 
@@ -117,26 +120,30 @@ activities.controller('main', ['$scope', '$http',
     }
 
     $scope.daySelectEnd = function(event) {
-      $('.select').width(0);
-      $('.select').height(0);
-      if($selected.length == 0) {
-        console.log('nothing selected');
-        $mousedown = false;
-        $('.select').hide();
-        $('rect').css('opacity', '1');
-        $repoStats.reset();
-        $langStats.reset();
+      if ($notSelecting) {
+        $notSelecting = false
       } else {
-        // reset counts
-        for(x = 0; x < $reposArray.length; x++) {
-          $reposArray[x].count = 0;
+        $('.select').width(0);
+        $('.select').height(0);
+        if($selected.length == 0) {
+          console.log('nothing selected');
+          $mousedown = false;
+          $('.select').hide();
+          $('rect').css('opacity', '1');
+          $repoStats.reset();
+          $langStats.reset();
+        } else {
+          // reset counts
+          for(x = 0; x < $reposArray.length; x++) {
+            $reposArray[x].count = 0;
+          }
+          $langStats.update($selected);
+          $repoStats.update($selected);
         }
-        $langStats.update($selected);
-        $repoStats.update($selected);
-      }
-      $selected = [];
+        $selected = [];
 
-      $mousedown = false;
+        $mousedown = false;
+      }
     }
 
     $scope.langSelect = function(lang, event) {
@@ -158,6 +165,7 @@ activities.controller('main', ['$scope', '$http',
 
       $repoStats.update($selected);
       $selected = [];
+      $langStats.setLang(lang);
     }
 }]);
 

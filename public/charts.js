@@ -52,21 +52,15 @@ Chart.prototype.update = function (selected) {
   }
 
   var total = 0;
-  if (!(newData instanceof Array)) {
-    for (x = 0; x < this.newData.length; x++) {
-      if (newData[this.newData[x].name]) {
-        this.newData[x].count = newData[this.newData[x].name];
-        $('[id="'+window.btoa(this.newData[x].name)+'"]').show();
-        total++;
-      } else {
-        this.newData[x].count = 0;
-        $('[id="'+window.btoa(this.newData[x].name)+'"]').hide();
-      }
+  for (x = 0; x < this.newData.length; x++) {
+    if (newData[this.newData[x].name]) {
+      this.newData[x].count = newData[this.newData[x].name];
+      $('[id="'+window.btoa(this.newData[x].name)+'"]').show();
+      total++;
+    } else {
+      this.newData[x].count = 0;
+      $('[id="'+window.btoa(this.newData[x].name)+'"]').hide();
     }
-  } else {
-    this.newData = JSON.parse(JSON.stringify(newData));
-    $('.activities text').show();
-    total = 1;
   }
 
   if (total != 0) {
@@ -77,7 +71,6 @@ Chart.prototype.update = function (selected) {
 }
 
 Chart.prototype.setData = function() {
-  $('.activities path').show();
   this.arcs = this.arcs.data(this.pie(this.newData));
   this.labels = this.labels.data(this.pie(this.newData));
 
@@ -101,8 +94,9 @@ Chart.prototype.setData = function() {
 }
 
 Chart.prototype.reset = function() {
-  this.newData = this.data;
+  this.newData = JSON.parse(JSON.stringify(this.data));
   this.setData();
+  $('.activities text').show();
 }
 
 Chart.prototype.draw = function() {
@@ -132,4 +126,26 @@ Chart.prototype.label = function(data) {
                     })
                     .text(function(d, i) { return data[i].name })
                     .each(function(d) { this._current = d });
+}
+
+Chart.prototype.setLang = function(lang) {
+  if (this.name == 'lang') {
+    this.newData = [];
+    for (x = 0; x < this.data.length; x++) {
+      if (this.data[x].name == lang) {
+        this.newData.push({
+          name: lang,
+          count: 1
+        });
+      } else {
+        this.newData.push({
+          name: this.data[x].name,
+          count: 0
+        });
+      }
+    }
+    this.setData();
+    $('.activities').find('svg:nth-child(3) text').hide();
+    $('.activities').find('svg:nth-child(3) text:contains('+lang+')').show();
+  }
 }
