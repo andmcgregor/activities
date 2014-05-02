@@ -153,6 +153,19 @@ app.get('/api/files', function(req, res) {
   }
 });
 
+//app.get('/custom-branches', function(req, res) {
+//  request_objs = [];
+//  for(x = 0; x < config.other_requests.length; x++) {
+//    request_objs.push({
+//      uri: config.other_requests[x].uri,
+//      page: 1,
+//      repo: config.other_requests[x].repo,
+//      branch: config.other_requests[x].branch
+//    });
+//  }
+//  new Update(request_objs)
+//});
+
 app.get('*', function(req, res) {
   res.sendfile('./public/index.html');
 });
@@ -208,11 +221,12 @@ Update.prototype.process = function() {
     } else if (req.uri.match(/pulls/)) {
       req.type = 'pulls';
     } else if (req.uri.match(/\/commits\//)) {
+      console.log('commits!');
       req.type = 'commit';
     }
 
     console.log('Requesting: '+req.uri);
-    this.request(req.uri, req.page, req.repo);
+    this.request(req.uri, req.page, req.repo, req.branch);
     this.idle = 0;
   } else {
     console.log('Nothing to process...');
@@ -225,7 +239,7 @@ Update.prototype.process = function() {
   }
 }
 
-Update.prototype.request = function(path, page, repo) {
+Update.prototype.request = function(path, page, repo, branch) {
   var options = {
     headers: {
       'User-Agent': config.github_username
@@ -249,7 +263,7 @@ Update.prototype.request = function(path, page, repo) {
       if (path.match(/user\/repos/)) {
         self.parseRepos(res, data);
       } else if (path.match(/commits\?author/)) {
-        self.parseCommits(res, data, repo);
+        self.parseCommits(res, data, repo, branch);
       } else if (path.match(/pulls/)) {
         self.parsePulls(res, data, repo, page);
       } else if (path.match(/\/commits\//)) {
@@ -285,7 +299,7 @@ Update.prototype.parseRepos = function(res, data) {
   }
 }
 
-Update.prototype.parseCommits = function(res, data, repo) {
+Update.prototype.parseCommits = function(res, data, repo, branch) {
   commits = [];
   for(x = 0; x < data.length; x++) {
     date = Date.parse(data[x].commit.committer.date);
@@ -306,28 +320,34 @@ Update.prototype.parseCommits = function(res, data, repo) {
   if (commits.length == 100) {
     this.addToQueue({
       uri:  res.headers.link.match(/^<[^>]+>/)[0].replace(/[<>]/g, ''),
-      repo: repo
+      repo: repo,
+      branch: branch
     });
   }
   for (y = 0; y < commits.length; y++) {
     this.addToQueue({
       uri: '/repos/'+repo+'/commits/'+commits[y].sha,
-      repo: repo
+      repo: repo,
+      branch: branch
     });
   }
 }
 
 Update.prototype.parseCommit = function(res, data, repo) {
-  files = [];
-  for (x = 0; x < data.files.length; x++) {
-    files.push({
-      sha: data.sha,
-      filename: data.files[x].filename, // perhaps save language at this point
-      additions: data.files[x].additions,
-      deletions: data.files[x].deletions
-    });
+  if(data.files === undefined) {
+    console.log('ERROR!!!')
+  } else {
+    files = [];
+    for (x = 0; x < data.files.length; x++) {
+      files.push({
+        sha: data.sha,
+        filename: data.files[x].filename, // perhaps save language at this point
+        additions: data.files[x].additions,
+        deletions: data.files[x].deletions
+      });
+    }
+    File.create(files);
   }
-  File.create(files);
 }
 
 Update.prototype.parsePulls = function(res, data, repo, page) {
@@ -384,5 +404,3 @@ Jobs.prototype.fetch = function() {
 }
 
 new Jobs;
-
-
