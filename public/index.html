@@ -17,37 +17,48 @@
     <script src="core.js"></script>
   </head>
 
-  <body ng-controller="main" ng-mousedown="daySelectBegin($event)" ng-mouseup="daySelectEnd($event)" ng-mousemove="daySelecting($event)">
-    <div class="title">
-      {{content.title}}
+  <body ng-controller="main">
+    <div class="about">
     </div>
-    <div class="intro">
-      <p>I'm a NYC based web developer with experience with <a href="#" ng-click="langSelect('ruby', $event)">Ruby</a>, Ruby on Rails, <a href="#" ng-click="langSelect('javascript', $event)">Javascript</a>, Node.js, Backbone and Angular. I'm also learning <a href="#" ng-click="langSelect('cpp', $event)">C++</a> and OpenGL.</p>
-    </div>
-    <div class="social">
-      <a ng-attr-href="{{link.href}}" ng-repeat="link in content.social">{{link.title}}</a>
-    </div>
-    <div class="stats">
-      <p>I've pushed {{totals.commits}} commits, containing <span class="additions">{{additions}}</span> additions and <span class="deletions">{{deletions}}</span> deletions, across {{totals.pulls}} pull requests in {{totals.repos}} repos.</p>
-    </div>
-    <div class="activities"> 
-      <svg width="1169px" height="156px">
-        <defs>
-          <pattern id="diagonalHatch" patternUnits="userSpaceOnUse", width="4" height="4">
-            <path d="M-1,1 l2,-2 M0,4 l4,-4 M3,5 l2,-2" stroke="#ffffff" stroke-width="1"></path>
-          </pattern>
-        </defs>
 
-        <g ng-repeat="cell in cells" ng-switch="cell.secret">
-        <rect class="day" width="20" height="20" ng-attr-x="{{cell.x}}" ng-attr-y="{{cell.y}}" data-start="{{cell.start}}" data-end="{{cell.end}}" data-date="{{cell.date}}" data-commit-num="{{cell.commit_num}}" style="fill: {{cell.color}};" ng-attr-data-secret="{{cell.secret}}" ng-attr-data-commits-by-repo="{{cell.commits_by_repo}}" ng-attr-data-lang-per-cell="{{cell.lang_per_cell}}" ng-click="dayClick(cell, $event)" ng-mouseover="dayHover(cell, $event)" ng-mouseout="removeHover()"></rect>
-          <rect ng-switch-when="true" class="day" width="20" height="20" ng-attr-x="{{cell.x}}" ng-attr-y="{{cell.y}}" fill="url(#diagonalHatch)" ng-click="dayClick(cell, $event)" ng-mouseover="dayHover(cell, $event)"></rect>
-        </g>
-      </svg>
+    <div class="over-main" ng-mousedown="ensureInView($event)"></div>
+    <div class="main" ng-mousedown="daySelectBegin($event)" ng-mouseup="daySelectEnd($event)" ng-mousemove="daySelecting($event)">
+      <div class="title">
+        {{content.title}}
+      </div>
+      <div class="intro">
+        <p>I'm a NYC based web developer with experience with <a href="#" ng-click="langSelect('ruby', $event)">Ruby</a>, Ruby on Rails, <a href="#" ng-click="langSelect('javascript', $event)">Javascript</a>, Node.js, Backbone and Angular. I'm also learning <a href="#" ng-click="langSelect('cpp', $event)">C++</a> and OpenGL.</p>
+      </div>
+      <div class="social">
+        <a href="#" ng-click="openAbout($event)">About</a>
+        <!-- <a ng-attr-href="{{link.href}}" ng-repeat="link in content.social">{{link.title}}</a> -->
+      </div>
+      <div class="stats">
+        <p>I've pushed {{totals.commits}} commits, containing <span class="additions">{{additions}}</span> additions and <span class="deletions">{{deletions}}</span> deletions, across {{totals.pulls}} pull requests in {{totals.repos}} repos.</p>
+      </div>
+      <div class="activities"> 
+        <svg width="1169px" height="156px">
+          <defs>
+            <pattern id="diagonalHatch" patternUnits="userSpaceOnUse", width="4" height="4">
+              <path d="M-1,1 l2,-2 M0,4 l4,-4 M3,5 l2,-2" stroke="#ffffff" stroke-width="1"></path>
+            </pattern>
+          </defs>
+
+          <g ng-repeat="cell in cells" ng-switch="cell.secret">
+            <rect class="day" width="20" height="20" ng-attr-x="{{cell.x}}" ng-attr-y="{{cell.y}}" data-start="{{cell.start}}" data-end="{{cell.end}}" data-date="{{cell.date}}" data-commit-num="{{cell.commit_num}}" style="fill: {{cell.color}};" ng-attr-data-secret="{{cell.secret}}" ng-attr-data-commits-by-repo="{{cell.commits_by_repo}}" ng-attr-data-lang-per-cell="{{cell.lang_per_cell}}" ng-click="dayClick(cell, $event)" ng-mouseover="dayHover(cell, $event)" ng-mouseout="removeHover()"></rect>
+            <!-- <rect ng-switch-when="true" class="day" width="20" height="20" ng-attr-x="{{cell.x}}" ng-attr-y="{{cell.y}}" fill="url(#diagonalHatch)" ng-click="dayClick(cell, $event)" ng-mouseover="dayHover(cell, $event)"></rect> -->
+          </g>
+        </svg>
+      </div>
+      <div class="hover">
+        x contributions on date
+      </div>
+      <div class="select">
+      </div>
     </div>
-    <div class="hover">
-      x contributions on date
-    </div>
-    <div class="select">
+
+    <div class="blog">
+
     </div>
   </body>
 </html>

@@ -1,6 +1,32 @@
 html, body {
   height: 100%;
   margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+}
+
+.about {
+  top: 0;
+  width: 450px;
+  height: 100%;
+  position: absolute;
+  background: #000;
+  -webkit-transition: -webkit-transform 0.6s;
+  -webkit-transform: translateX(-450px);
+}
+
+.main {
+  height: 100%;
+  width: 1200px;
+  margin: 0 auto;
+  z-index: 1;
+  -webkit-transition: -webkit-transform 0.5s;
+}
+
+.over-main {
+  position: absolute;
+  z-index: 2;
+  -webkit-transform: translateX(450px);
 }
 
 .activities {

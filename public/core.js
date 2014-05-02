@@ -1,5 +1,6 @@
 $mousedown = false;
 $notSelecting = false;
+$aboutShown = false;
 $selected = [];
 
 var activities = angular.module('activities', []);
@@ -147,6 +148,7 @@ activities.controller('main', ['$scope', '$http',
     }
 
     $scope.langSelect = function(lang, event) {
+      event.preventDefault();
       $('rect').css('opacity', '0.1');
       langRegex = new RegExp(lang);
       newLangData = {};
@@ -166,6 +168,28 @@ activities.controller('main', ['$scope', '$http',
       $repoStats.update($selected);
       $selected = [];
       $langStats.setLang(lang);
+    }
+
+    // content
+
+    $scope.openAbout = function(event) {
+      $aboutShown = true;
+      $('.about').css('-webkit-transform', 'translateX(0px)');
+      $('.main').css('-webkit-transform', 'translateX(350px)');
+      $('.main').css('-webkit-filter', 'blur(10px)');
+      $('.over-main').css('width', '100%');
+      $('.over-main').css('height', '100%');
+    }
+
+    $scope.ensureInView = function(event) {
+      if ($aboutShown) {
+        $('.about').css('-webkit-transform', 'translateX(-450px)');
+        $('.main').css('-webkit-transform', 'translateX(0px)');
+        $('.main').css('-webkit-filter', 'blur(0px)');
+        $('.over-main').css('width', '0');
+        $('.over-main').css('height', '0');
+        $aboutShown = false;
+      }
     }
 }]);
 
