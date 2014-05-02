@@ -70,34 +70,39 @@ Chart.prototype.update = function (selected) {
   }
 
   if (total != 0) {
-    $('.activities path').show();
-    this.arcs = this.arcs.data(this.pie(this.newData));
-    this.labels = this.labels.data(this.pie(this.newData));
-
-    var arc = this.arc;
-    this.arcs.transition().duration(750).attrTween('d', function(a) {
-      var i = d3.interpolate(this._current, a);
-      this._current = i(0);
-      return function(t) {
-        return arc(i(t));
-      };
-    });
-
-    this.labels.transition().duration(750).attr('transform', function(d) {
-      var c = arc.centroid(d),
-          x = c[0],
-          y = c[1],
-          h = Math.sqrt(x * x + y * y),
-          r = 150;
-      return 'translate('+ (x/h * r) + ',' + (y/h * r) + ')';
-    });
+    this.setData();
   } else {
     $('.activities path').hide();
   }
 }
 
+Chart.prototype.setData = function() {
+  $('.activities path').show();
+  this.arcs = this.arcs.data(this.pie(this.newData));
+  this.labels = this.labels.data(this.pie(this.newData));
+
+  var arc = this.arc;
+  this.arcs.transition().duration(750).attrTween('d', function(a) {
+    var i = d3.interpolate(this._current, a);
+    this._current = i(0);
+    return function(t) {
+      return arc(i(t));
+    };
+  });
+
+  this.labels.transition().duration(750).attr('transform', function(d) {
+    var c = arc.centroid(d),
+        x = c[0],
+        y = c[1],
+        h = Math.sqrt(x * x + y * y),
+        r = 150;
+    return 'translate('+ (x/h * r) + ',' + (y/h * r) + ')';
+  });
+}
+
 Chart.prototype.reset = function() {
-  this.update(this.data);
+  this.newData = this.data;
+  this.setData();
 }
 
 Chart.prototype.draw = function() {

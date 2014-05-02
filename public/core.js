@@ -48,8 +48,8 @@ activities.controller('main', ['$scope', '$http',
 
     $scope.dayClick = function(day, event) {
       $selected.push(day);
-      $langStats.update($selected);
-      $repoStats.update($selected);
+      //$langStats.update($selected);
+      //$repoStats.update($selected);
 
     }
 
@@ -75,7 +75,7 @@ activities.controller('main', ['$scope', '$http',
         $('rect').css('opacity', '0.1');
 
         $('.select').show();
-        $('.select').css('width', '1px', 'height', '1px');
+        $('.select').css(['width', '1px', 'height', '1px']);
         $('.select').offset({top: event.clientY, left: event.clientX});
         $('.select').data('top', event.clientY);
         $('.select').data('left', event.clientX);
@@ -117,8 +117,12 @@ activities.controller('main', ['$scope', '$http',
     }
 
     $scope.daySelectEnd = function(event) {
-      $('.select').hide();
+      $('.select').width(0);
+      $('.select').height(0);
       if($selected.length == 0) {
+        console.log('nothing selected');
+        $mousedown = false;
+        $('.select').hide();
         $('rect').css('opacity', '1');
         $repoStats.reset();
         $langStats.reset();
@@ -148,7 +152,12 @@ activities.controller('main', ['$scope', '$http',
           $selected.push(cell);
         }
       }
-      $scope.daySelectEnd(null);
+      for(x = 0; x < $reposArray.length; x++) {
+        $reposArray[x].count = 0;
+      }
+
+      $repoStats.update($selected);
+      $selected = [];
     }
 }]);
 
