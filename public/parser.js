@@ -17,6 +17,25 @@ function Parser(activities, files) {
 
   var cells = Array(365);
 
+  // makes hash with sha keys
+  langPerSha = {};
+  for (x = 0; x < files.length; x++) {
+    lang = files[x].lang;
+    changes = files[x].ad + files[x].de;
+    sha = files[x].sha;
+
+    if (langPerSha[sha]) {
+      if (langPerSha[sha][lang]) {
+        langPerSha[sha][lang] = langPerSha[sha][lang] + changes;
+      } else {
+        langPerSha[sha][lang] = changes;
+      }
+    } else {
+      langPerSha[sha] = {};
+      langPerSha[sha][lang] = changes;
+    }
+  }
+
   // add repo sha's to cells
   for (x = 0; x < cells.length; x++) {
     if (current_day > 6) {
@@ -34,18 +53,22 @@ function Parser(activities, files) {
         commit_num++;
         var name = activities[y].owner+'/'+activities[y].repo;
         var found = false;
+        var langs = [];
         for (z = 0; z < commitsByRepo.length; z++) {
           if (commitsByRepo[z].name == name) {
             commitsByRepo[z].count++;
             found = true;
           }
         }
+        // use sha to find languages
+        for (var lang in langPerSha[activities[y].sha]) langs.push(lang);
         if (found == false) {
           if (activities[y].sha)
             shas.push(activities[y].sha);
           commitsByRepo.push({
             name: name,
-            count: 1
+            count: 1,
+            langs: langs
           });
         }
 
@@ -75,25 +98,6 @@ function Parser(activities, files) {
     seconds = seconds + 86400;
     current_day++;
     commit_num = 0;
-  }
-
-  // makes hash with sha keys
-  langPerSha = {};
-  for (x = 0; x < files.length; x++) {
-    lang = files[x].lang;
-    changes = files[x].ad + files[x].de;
-    sha = files[x].sha;
-
-    if (langPerSha[sha]) {
-      if (langPerSha[sha][lang]) {
-        langPerSha[sha][lang] = langPerSha[sha][lang] + changes;
-      } else {
-        langPerSha[sha][lang] = changes;
-      }
-    } else {
-      langPerSha[sha] = {};
-      langPerSha[sha][lang] = changes;
-    }
   }
 
   // add language stats to cells

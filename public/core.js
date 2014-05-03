@@ -71,6 +71,7 @@ activities.controller('main', ['$scope', '$http',
     }
 
     $scope.daySelectBegin = function(event) {
+      event.preventDefault();
       if (event.target.nodeName != 'rect' && event.target.nodeName != 'A') {
         $mousedown = true;
 
