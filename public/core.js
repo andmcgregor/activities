@@ -166,7 +166,7 @@ activities.controller('main', ['$scope', '$http',
         $reposArray[x].count = 0;
       }
 
-      $repoStats.update($selected);
+      $repoStats.update($selected, lang);
       $selected = [];
       $langStats.setLang(lang);
     }

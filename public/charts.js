@@ -24,17 +24,19 @@ function Chart(data, size, name) {
   this.label();
 }
 
-Chart.prototype.update = function (selected) {
+Chart.prototype.update = function (selected, lang) {
   newData = {};
   if (this.name == 'repo') {
     for (x = 0; x < selected.length; x++) {
       repoCounts = JSON.parse(selected[x].commits_by_repo);
       for (y = 0; y < repoCounts.length; y++) {
-        var name = repoCounts[y].name
-        if (newData[name]) {
-          newData[name] += repoCounts[y].count;
-        } else {
-          newData[name] = repoCounts[y].count;
+        if (!lang || $.inArray(lang, repoCounts[y].langs) == 1) {
+          var name = repoCounts[y].name
+          if (newData[name]) {
+            newData[name] += repoCounts[y].count;
+          } else {
+            newData[name] = repoCounts[y].count;
+          }
         }
       }
     }
