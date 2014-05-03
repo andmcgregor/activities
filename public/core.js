@@ -50,9 +50,9 @@ activities.controller('main', ['$scope', '$http',
 
     $scope.dayClick = function(day, event) {
       $selected.push(day);
-      //$langStats.update($selected);
-      //$repoStats.update($selected);
-
+      $langStats.update($selected);
+      $repoStats.update($selected);
+      $selected = [];
     }
 
     $scope.dayHover = function(day, event) {
@@ -72,7 +72,8 @@ activities.controller('main', ['$scope', '$http',
 
     $scope.daySelectBegin = function(event) {
       event.preventDefault();
-      if (event.target.nodeName != 'rect' && event.target.nodeName != 'A') {
+      console.log(event.target.nodeName);
+      if (event.target.nodeName != 'rect' && event.target.nodeName != 'A' && event.target.nodeName != 'path') {
         $mousedown = true;
 
         $('rect').css('opacity', '0.1');
@@ -149,7 +150,8 @@ activities.controller('main', ['$scope', '$http',
     }
 
     $scope.langSelect = function(lang, event) {
-      event.preventDefault();
+      if (event)
+        event.preventDefault();
       $('rect').css('opacity', '0.1');
       langRegex = new RegExp(lang);
       newLangData = {};

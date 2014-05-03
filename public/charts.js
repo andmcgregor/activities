@@ -68,7 +68,7 @@ Chart.prototype.update = function (selected, lang) {
   if (total != 0) {
     this.setData();
   } else {
-    $('.activities path').hide();
+    //$('.activities path').hide();
   }
 }
 
@@ -107,6 +107,7 @@ Chart.prototype.draw = function() {
                                        .enter().append('path')
                                        .attr('fill', function(d, i) { return t.color(i); })
                                        .attr('d', this.arc)
+                                       .on("mousedown", function(d, i) { angular.element($('body')).scope().langSelect(t.data[i].name) })
                                        .each(function(d) { this._current = d; });
   }
 

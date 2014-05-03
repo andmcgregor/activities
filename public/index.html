@@ -27,12 +27,12 @@
         {{content.title}}
       </div>
       <div class="intro">
-        <p>I'm a NYC based web developer with experience with <a href="#" ng-click="langSelect('ruby', $event)">Ruby</a>, Ruby on Rails, <a href="#" ng-click="langSelect('javascript', $event)">Javascript</a>, Node.js, Backbone and Angular. I'm also learning <a href="#" ng-click="langSelect('cpp', $event)">C++</a> and OpenGL.</p>
+        <p>I'm a NYC based web developer with experience with <a href="#" ng-click="langSelect('ruby', $event)">Ruby</a>, Ruby on Rails, <a href="#" ng-click="langSelect('javascript', $event)">Javascript</a>/<a href="#" ng-click="langSelect('coffeescript', $event)">CoffeeScript</a>, Node.js, Backbone and Angular. I'm also learning <a href="#" ng-click="langSelect('cpp', $event)">C++</a> and OpenGL.</p>
       </div>
       <div class="social">
         <a href="#" ng-click="openAbout($event)">About</a>
-        <a href="#" ng-click="openBlog($event)">Blog</a>
-        <!-- <a ng-attr-href="{{link.href}}" ng-repeat="link in content.social">{{link.title}}</a> -->
+        <!-- <a href="#" ng-click="openBlog($event)">Blog</a>
+             <a ng-attr-href="{{link.href}}" ng-repeat="link in content.social">{{link.title}}</a> -->
       </div>
       <div class="stats">
         <p>I've pushed {{totals.commits}} commits, containing <span class="additions">{{additions}}</span> additions and <span class="deletions">{{deletions}}</span> deletions, across {{totals.pulls}} pull requests in {{totals.repos}} repos.</p>
