@@ -153,6 +153,24 @@ app.get('/api/files', function(req, res) {
   }
 });
 
+// fix bad data
+//app.get('/data-fix', function(req, res) {
+//  Activity.update({repo: 'mailman'}, {owner: 'take-the-interview'}, {multi:true}, function(err, num, raw) {
+//    console.log(num+' records updated');
+//  });
+//  Activity.update({repo: 'take_the_interview'}, {owner: 'take-the-interview'}, {multi:true}, function(err, num, raw) {
+//    console.log(num+' records updated');
+//  });
+//  Activity.update({repo: 'vanilla'}, {owner: 'take-the-interview'}, {multi:true}, function(err, num, raw) {
+//    console.log(num+' records updated');
+//  });
+//  Activity.update({repo: 'live'}, {owner: 'take-the-interview'}, {multi:true}, function(err, num, raw) {
+//    console.log(num+' records updated');
+//  });
+//  Activity.update({owner: 'take-the-interview'}, {secret: true}, {multi:true}, function(err, num, raw) {
+//    console.log(num+' records updated');
+//  });
+//});
 // for debugging
 //app.get('/reset', function(req, res) {
 //  Job.update({ type: 'update' }, { due: new Date(new Date().getTime() - 86400000) }, {upsert: true}, function(err) {});

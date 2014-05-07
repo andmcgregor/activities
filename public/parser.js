@@ -51,7 +51,11 @@ function Parser(activities, files) {
     for (y = 0; y < activities.length; y++) {
       if (activities[y].date > seconds && activities[y].date < seconds + 86400) {
         commit_num++;
-        var name = activities[y].owner+'/'+activities[y].repo;
+        if (activities[y].secret) {
+          var name = activities[y].owner;
+        } else {
+          var name = activities[y].repo;
+        }
         var found = false;
         var langs = [];
         for (z = 0; z < commitsByRepo.length; z++) {
@@ -155,11 +159,16 @@ function Parser(activities, files) {
 
   repos = {}
   for(x = 0; x < activities.length; x++) {
-    if(!repos[activities[x].owner+'/'+activities[x].repo]) {
-      repos[activities[x].owner+'/'+activities[x].repo] = 1;
+    if (activities[x].secret) {
+      var name = activities[x].owner;
+    } else {
+      var name = activities[x].repo;
+    }
+    if(!repos[name]) {
+      repos[name] = 1;
       totals.repos++;
     } else {
-      repos[activities[x].owner+'/'+activities[x].repo]++;
+      repos[name]++;
     }
     if(activities[x].type == "commit") {
       totals.commits++;

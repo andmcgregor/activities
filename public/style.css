@@ -57,6 +57,7 @@ html, body {
 }
 
 .hover {
+  visibility: hidden;
   display: inline-block;
   padding: 0 5px;
   color: #ffffff;
