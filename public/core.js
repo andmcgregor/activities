@@ -183,7 +183,7 @@ activities.controller('main', ['$scope', '$http',
       $aboutShown = true;
       $('.about').css('-webkit-transform', 'translateX(0px)');
       $('.main').css('-webkit-transform', 'translateX(350px)');
-      $('.main').css('-webkit-filter', 'blur(10px)');
+      //$('.main').css('-webkit-filter', 'blur(10px)');
       $('.over-main').css('width', '100%');
       $('.over-main').css('height', '100%');
     }
@@ -192,7 +192,7 @@ activities.controller('main', ['$scope', '$http',
       if ($aboutShown) {
         $('.about').css('-webkit-transform', 'translateX(-450px)');
         $('.main').css('-webkit-transform', 'translateX(0px)');
-        $('.main').css('-webkit-filter', 'blur(0px)');
+        //$('.main').css('-webkit-filter', 'blur(0px)');
         $('.over-main').css('width', '0');
         $('.over-main').css('height', '0');
         $aboutShown = false;
