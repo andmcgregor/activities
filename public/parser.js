@@ -85,7 +85,7 @@ function Parser(activities, files) {
       offsetY: 0,
       start: seconds,
       end: seconds + 86399,
-      date: date.toString(),
+      date: date.toDateString(),
       commit_num: commit_num,
       commits_by_repo: JSON.stringify(commitsByRepo),
       shas: shas,

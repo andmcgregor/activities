@@ -57,7 +57,11 @@ activities.controller('main', ['$scope', '$http',
 
     $scope.dayHover = function(day, event) {
       if (!$mousedown) {
-        $('.hover').html(day.commit_num+' contributions on '+day.date);
+        if (day.commit_num != 1)
+          plural = 's';
+        else
+          plural = '';
+        $('.hover').html(day.date+': <strong>'+day.commit_num+' contribution'+plural+'</strong>');
         $('.hover').show();
         offset = $(event.target).offset();
         offset.top -= 20;
