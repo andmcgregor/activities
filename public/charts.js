@@ -15,10 +15,12 @@ function Chart(data, size, name) {
                       .value(function(d) { return d.count; });
 
   this.svg = d3.select('.activities').append('svg')
+                                     .attr('class', 'chart')
                                      .attr('width', size)
                                      .attr('height', size)
                                      .append('g')
                                      .attr('transform', 'translate('+(size/2)+','+(size/2)+')');
+
 
   this.draw();
   this.label();
@@ -68,11 +70,12 @@ Chart.prototype.update = function (selected, lang) {
   if (total != 0) {
     this.setData();
   } else {
-    //$('.activities path').hide();
+    $('.activities path').css('visibility', 'hidden');
   }
 }
 
 Chart.prototype.setData = function() {
+  $('.activities path').css('visibility', 'normal');
   this.arcs = this.arcs.data(this.pie(this.newData));
   this.labels = this.labels.data(this.pie(this.newData));
 

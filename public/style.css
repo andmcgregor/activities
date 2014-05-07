@@ -80,3 +80,7 @@ html, body {
 #selected_repo_count {
   margin-top: 250px;
 }
+
+.chart {
+  margin: 0 67.25px;
+}

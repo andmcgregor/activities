@@ -49,6 +49,8 @@ activities.controller('main', ['$scope', '$http',
     });
 
     $scope.dayClick = function(day, event) {
+      $('rect').css('opacity', '0.1');
+      $('rect[data-start="'+day.start+'"]').css('opacity', '1');
       $selected.push(day);
       $langStats.update($selected);
       $repoStats.update($selected);
