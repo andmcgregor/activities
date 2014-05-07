@@ -333,10 +333,14 @@ Update.prototype.parseCommits = function(res, data, repo, branch) {
     });
   }
   for (y = 0; y < commits.length; y++) {
-    this.addToQueue({
-      uri: '/repos/'+repo+'/commits/'+commits[y].sha,
-      repo: repo,
-      branch: branch
+    Activity.find({ sha: commits[y].sha }, function (err, res) {
+      if (res == []) {
+        this.addToQueue({
+          uri: '/repos/'+repo+'/commits/'+commits[y].sha,
+          repo: repo,
+          branch: branch
+        });
+      }
     });
   }
 }
