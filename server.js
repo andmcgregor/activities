@@ -54,24 +54,24 @@ Job.find({}, function(err, jobs) {
     console.log('Next Update: %s', jobs[0].due);
 });
 
-$cache = {};
+var $cache = {};
 
 // fill cache
 
 // Activities
 
-Activity.find(function(err, activities) {
-  response = {
+Activity.find({}, function(err, activities) {
+  var response = {
     activities: activities
   };
 
   $cache.activities = response;
-  console.log('Added '+response.length+' activities to the cache');
+  console.log('Added activities to the cache');
 });
 
 // Files
 
-File.find(function(err, files) {
+File.find({}, function(err, files) {
   var additions = 0;
   var deletions = 0;
   var res_files = [];
@@ -79,7 +79,7 @@ File.find(function(err, files) {
   for(x = 0; x < files.length; x++) {
     additions += files[x].additions;
     deletions += files[x].deletions;
-    filename = files[x].filename;
+    var filename = files[x].filename;
     switch (true) {
       case /\.rb$|\.ru$|\.ruby|\.Gemfile/.test(filename):
         var language = 'ruby';
@@ -126,7 +126,7 @@ File.find(function(err, files) {
     res_files.push({sha: files[x].sha, lang: language, ad: files[x].additions, de: files[x].deletions});
   }
 
-  response = {
+  var response = {
     count: files.length,
     additions: additions,
     deletions: deletions,
@@ -134,7 +134,7 @@ File.find(function(err, files) {
   }
 
   $cache.files = response;
-  console.log('Added '+response.length+' files to the cache');
+  console.log('Added files to the cache');
 });
 
 /////////////
