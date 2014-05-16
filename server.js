@@ -67,7 +67,7 @@ Activity.find(function(err, activities) {
 
   $cache.activities = response;
   console.log('Added '+response.length+' activities to the cache');
-}
+});
 
 // Files
 
@@ -135,7 +135,7 @@ File.find(function(err, files) {
 
   $cache.files = response;
   console.log('Added '+response.length+' files to the cache');
-}
+});
 
 /////////////
 
