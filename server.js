@@ -174,23 +174,23 @@ app.get('/api/files', function(req, res) {
 //  });
 //});
 // for debugging
-app.get('/reset', function(req, res) {
-  Job.update({ type: 'update' }, { due: new Date(new Date().getTime() - 86400000) }, {upsert: true}, function(err) {});
-});
+//app.get('/reset', function(req, res) {
+//  Job.update({ type: 'update' }, { due: new Date(new Date().getTime() - 86400000) }, {upsert: true}, function(err) {});
+//});
 
 // add to default request queue rather than manual update
-app.get('/custom-branches', function(req, res) {
-  request_objs = [];
-  for(x = 0; x < config.other_requests.length; x++) {
-    request_objs.push({
-      uri: config.other_requests[x].uri,
-      page: 1,
-      repo: config.other_requests[x].repo,
-      branch: config.other_requests[x].branch
-    });
-  }
-  new Update(request_objs)
-});
+//app.get('/custom-branches', function(req, res) {
+//  request_objs = [];
+//  for(x = 0; x < config.other_requests.length; x++) {
+//    request_objs.push({
+//      uri: config.other_requests[x].uri,
+//      page: 1,
+//      repo: config.other_requests[x].repo,
+//      branch: config.other_requests[x].branch
+//    });
+//  }
+//  new Update(request_objs)
+//});
 
 app.get('*', function(req, res) {
   res.sendfile('./public/index.html');
