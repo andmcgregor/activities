@@ -26,7 +26,7 @@ function Chart(data, size, name) {
   this.label();
 }
 
-Chart.prototype.update = function (selected, lang) {
+Chart.prototype.update = function (selected, lang, repo) {
   newData = {};
   if (this.name == 'repo') {
     for (x = 0; x < selected.length; x++) {
@@ -43,13 +43,35 @@ Chart.prototype.update = function (selected, lang) {
       }
     }
   } else if (this.name == 'lang') {
-    for (x = 0; x < selected.length; x++) {
-      langs = JSON.parse(selected[x].lang_per_cell);
-      for (var lang in langs) {
-        if (newData[lang]) {
-          newData[lang] = newData[lang] + langs[lang];
-        } else {
-          newData[lang] = langs[lang];
+    if (!repo) {
+      for (x = 0; x < selected.length; x++) {
+        langs = JSON.parse(selected[x].lang_per_cell);
+        for (var lang in langs) {
+          if (newData[lang]) {
+            newData[lang] = newData[lang] + langs[lang];
+          } else {
+            newData[lang] = langs[lang];
+          }
+        }
+      }
+    } else {
+      // only counts languages used in repo selected vs day as whole
+      for (x = 0; x < selected.length; x++) {
+        commits_by_repo = JSON.parse(selected[x].commits_by_repo);
+        for (y = 0; y < commits_by_repo.length; y++) {
+          if (commits_by_repo[y].name == repo) {
+            var langs_to_apply = commits_by_repo[y].langs;
+          }
+        }
+        langs = JSON.parse(selected[x].lang_per_cell);
+        for (var lang in langs) {
+          if (langs_to_apply.indexOf(lang) > -1) {
+            if (newData[lang]) {
+              newData[lang] = newData[lang] + langs[lang];
+            } else {
+              newData[lang] = langs[lang];
+            }
+          }
         }
       }
     }
@@ -110,7 +132,13 @@ Chart.prototype.draw = function() {
                                        .enter().append('path')
                                        .attr('fill', function(d, i) { return t.color(i); })
                                        .attr('d', this.arc)
-                                       .on("mousedown", function(d, i) { angular.element($('body')).scope().langSelect(t.data[i].name) })
+                                       .on("mousedown", function(d, i) {
+                                         if (t.name == 'lang') {
+                                           angular.element($('body')).scope().langSelect(t.data[i].name);
+                                         } else {
+                                           angular.element($('body')).scope().repoSelect(t.data[i].name);
+                                         }
+                                       })
                                        .each(function(d) { this._current = d; });
   }
 
@@ -135,23 +163,26 @@ Chart.prototype.label = function(data) {
 }
 
 Chart.prototype.setLang = function(lang) {
-  if (this.name == 'lang') {
-    this.newData = [];
-    for (x = 0; x < this.data.length; x++) {
-      if (this.data[x].name == lang) {
-        this.newData.push({
-          name: lang,
-          count: 1
-        });
-      } else {
-        this.newData.push({
-          name: this.data[x].name,
-          count: 0
-        });
-      }
+  this.newData = [];
+  for (x = 0; x < this.data.length; x++) {
+    if (this.data[x].name == lang) {
+      this.newData.push({
+        name: lang,
+        count: 1
+      });
+    } else {
+      this.newData.push({
+        name: this.data[x].name,
+        count: 0
+      });
     }
-    this.setData();
-    $('.activities').find('svg:nth-child(3) text').hide();
-    $('.activities').find('svg:nth-child(3) text:contains('+lang+')').show();
   }
+  this.setData();
+  if (this.name == 'lang') {
+    var nth = 3;
+  } else {
+    var nth = 2;
+  }
+  $('.activities').find('svg:nth-child('+nth+') text').hide();
+  $('.activities').find('svg:nth-child('+nth+') text:contains('+lang+')').show();
 }

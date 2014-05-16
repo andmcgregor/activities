@@ -65,6 +65,7 @@ activities.controller('main', ['$scope', '$http',
           plural = '';
         $('.hover').html(day.date+': <strong>'+day.commit_num+' contribution'+plural+'</strong>');
         $('.hover').show();
+        $('.hover').css('visibility', 'visible');
         offset = $(event.target).offset();
         offset.top -= 20;
         offset.left -= 90;
@@ -78,7 +79,6 @@ activities.controller('main', ['$scope', '$http',
 
     $scope.daySelectBegin = function(event) {
       event.preventDefault();
-      console.log(event.target.nodeName);
       if (event.target.nodeName != 'rect' && event.target.nodeName != 'A' && event.target.nodeName != 'path') {
         $mousedown = true;
 
@@ -153,6 +153,20 @@ activities.controller('main', ['$scope', '$http',
 
         $mousedown = false;
       }
+    }
+
+    $scope.repoSelect = function(repo, event) {
+      console.log($scope.cells[0]);
+      $('rect').css('opacity', '0.1');
+      for (i = 0; i < $scope.cells.length; i++) {
+        if ($scope.cells[i].commits_by_repo.match(repo)) {
+          $('rect[data-start="'+$scope.cells[i].start+'"]').css('opacity', '1');
+          $selected.push($scope.cells[i]);
+        }
+      }
+      $langStats.update($selected, null, repo);
+      $repoStats.setLang(repo);;
+      $selected = [];
     }
 
     $scope.langSelect = function(lang, event) {
