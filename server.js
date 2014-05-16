@@ -1,11 +1,12 @@
-var config = require('./config.json');
+// LOCAL var config = require('./config.json');
+var company_repos = require('./company.json');
 
 var express  = require('express');
 var app      = express();
 var mongoose = require('mongoose');
 var https    = require('https');
 
-mongoose.connect(config.db);
+mongoose.connect(process.env.DB);
 
 app.configure(function() {
   app.use(express.static(__dirname + '/public'));
@@ -65,12 +66,7 @@ app.get('/api/activities', function(req, res) {
       }
 
       response = {
-        activities: activities,
-        content: {
-          title:  config.title,
-          intro:  config.intro,
-          social: config.social
-        }
+        activities: activities
       };
 
       $cache.activities = response;
@@ -228,14 +224,14 @@ Update.prototype.addToQueue = function(req) {
 Update.prototype.init = function() {
   this.errors = 0;
   if (this.queue.length == 0) {
-    for(x = 0; x < config.other_requests.length; x++) {
-      this.addToQueue({
-        uri: config.other_requests[x].uri,
-        page: 1,
-        repo: config.other_requests[x].repo,
-        branch: config.other_requests[x].branch
-      });
-    }
+    //for(x = 0; x < config.other_requests.length; x++) {
+    //  this.addToQueue({
+    //    uri: config.other_requests[x].uri,
+    //    page: 1,
+    //    repo: config.other_requests[x].repo,
+    //    branch: config.other_requests[x].branch
+    //  });
+    //}
     this.addToQueue({
       uri: '/user/repos?per_page=100',
       page: 1,
@@ -283,9 +279,9 @@ Update.prototype.process = function() {
 Update.prototype.request = function(path, page, repo, branch) {
   var options = {
     headers: {
-      'User-Agent': config.github_username
+      'User-Agent': process.env.GITHUB_USERNAME
     },
-    auth: config.github_token + ':x-oauth-basic',
+    auth: process.env.GITHUB_TOKEN + ':x-oauth-basic',
     hostname: 'api.github.com',
     path: path,
     method: 'GET'
@@ -324,12 +320,12 @@ Update.prototype.parseRepos = function(res, data) {
   for(x = 0; x < data.length; x++) {
     repos.push(data[x].full_name);
   }
-  repos = repos.concat(config.company_repos);
+  repos = repos.concat(company_repos);
 
   if (repos.length != 0) {
     for(x = 0; x < repos.length; x++) {
       this.addToQueue({
-        uri:  '/repos/'+repos[x]+'/commits?author='+config.github_username+'&per_page=100',
+        uri:  '/repos/'+repos[x]+'/commits?author='+process.env.GITHUB_USERNAME+'&per_page=100',
         repo: repos[x]
       });
       this.addToQueue({
@@ -345,7 +341,7 @@ Update.prototype.parseCommits = function(res, data, repo, branch) {
   commits = [];
   for(x = 0; x < data.length; x++) {
     date = Date.parse(data[x].commit.committer.date);
-    secret = config.company_repos.indexOf(repo) > -1;
+    secret = company_repos.indexOf(repo) > -1;
     commits.push({
       type: "commit",
       date: parseInt(date) / 1000,
@@ -403,9 +399,9 @@ Update.prototype.parseCommit = function(res, data, repo, branch) {
 Update.prototype.parsePulls = function(res, data, repo, page) {
   pulls = [];
   for(x = 0; x < data.length; x++) {
-    if (data[x].user.login == config.github_username) {
+    if (data[x].user.login == process.env.GITHUB_USERNAME) {
       date = Date.parse(data[x].created_at)
-      secret = config.company_repos.indexOf(repo) > -1;
+      secret = company_repos.indexOf(repo) > -1;
       pulls.push({
         type: "pull",
         date: parseInt(date) / 1000,
