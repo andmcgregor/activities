@@ -121,11 +121,11 @@ function Parser(activities, files) {
   }
 
   // calculate color values
-  var none  = '#EEEEEE';
-  var some  = '#89C4F4';
-  var more  = '#4B77BE';
-  var lots  = '#34495E';
-  var heaps = '#2C3E50';
+  var none  = '#171819'; // '#EEEEEE';
+  var some  = '#1D4800'; // '#89C4F4';
+  var more  = '#406B00'; // '#4B77BE';
+  var lots  = '#648F00'; // '#34495E';
+  var heaps = '#7EA91A'; // '#2C3E50';
 
   max = Math.max.apply(Math, cells.map(function(cell) { return cell.commit_num }));
   for(x = 0; x < cells.length; x++) {
