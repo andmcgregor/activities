@@ -7,6 +7,7 @@ var activities = angular.module('activities', []);
 
 activities.controller('main', ['$scope', '$http',
   function($scope, $http) {
+    $('#email').attr('href', 'mailto:me@andrewmcgregor.me');
     $http.get('/api/activities').success(function(x) {
       $http.get('/api/files').success(function(y) {
         var parsed = new Parser(x.activities, y.files);

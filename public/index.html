@@ -20,6 +20,41 @@
 
   <body ng-controller="main">
     <div class="about">
+      <img src="http://i.imgur.com/C1m31F5.png" id="logo" />
+
+      <div class="profiles">
+        <a href="http://github.com/andmcgregor" target="_blank">github</a> / 
+        <a href="http://stackoverflow.com/users/1386324/andmcgregor" target="_blank">stack overflow</a> / 
+        <a href="http://twitter.com/andmcgregor" target="_blank">twitter</a> / 
+        <a href="#" id="email">email</a>
+      </div>
+
+      <div class="content">
+        <h3>Recent Projects:</h3>
+        <p><a href="http://github.com/andmcgregor" target="_blank">prototyping</a> (private repo) - testing a game idea + first serious project using OpenGL.</p>
+        <p><a href="http://github.com/andmcgregor/activities" target="_blank">activities</a> - this website - wanted to publicly display github style contribution history that included private repos.</p>
+        <p><a href="http://github.com/andmcgregor/interviewease" target="_blank">interviewease</a> - skype-like video interviews with interactive coding sandbox.</p>
+        <p><a href="http://github.com/andmcgregor/vineline" target="_blank">vineline</a> - vineapp video playlist in calendar format.</p>
+      </div>
+
+      <div class="content">
+        <h3>Professional:</h3>
+        <div class="professional">
+          <img src="http://i.imgur.com/kts22Qp.jpg" class="logo" />
+          <div class="description">
+            <span class="title">Developer - Take The Interview</span><br>
+            <span class="date">October 2013, New York</span>
+          </div>
+        </div>
+
+        <div class="professional">
+          <img src="http://i.imgur.com/Wnc9vdJ.jpg" class="logo" />
+          <div class="description">
+            <span class="title">Student - Dev Bootcamp</span><br>
+            <span class="date">June - August 2013, Chicago</span>
+          </div>
+        </div>
+      </div>
     </div>
 
     <div class="over-main" ng-mousedown="ensureInView($event)"></div>
@@ -28,10 +63,11 @@
         {{content.title}}
       </div>
       <div class="intro">
-        <p>I'm a NYC based web developer with experience with <a href="#" ng-click="langSelect('ruby', $event)">Ruby</a>, Ruby on Rails, <a href="#" ng-click="langSelect('javascript', $event)">Javascript</a>/<a href="#" ng-click="langSelect('coffeescript', $event)">CoffeeScript</a>, Node.js, Backbone and Angular. I'm also learning <a href="#" ng-click="langSelect('cpp', $event)">C++</a> and OpenGL.</p>
+        <p>Hi, I'm Andrew McGregor, a NYC based web developer with experience with <a href="#" ng-click="langSelect('ruby', $event)">Ruby</a>, Ruby on Rails, <a href="#" ng-click="langSelect('javascript', $event)">Javascript</a>/<a href="#" ng-click="langSelect('coffeescript', $event)">CoffeeScript</a>, Node.js, Backbone and Angular. I'm also learning <a href="#" ng-click="langSelect('cpp', $event)">C++</a> and OpenGL.</p>
       </div>
       <div class="social">
-        <a href="#" ng-click="openAbout($event)">About</a>
+        <a href="#" ng-click="openAbout($event)">About</a> / 
+        <a href="#" ng-click="openAbout($event)">Contact</a>
         <!-- <a href="#" ng-click="openBlog($event)">Blog</a>
              <a ng-attr-href="{{link.href}}" ng-repeat="link in content.social">{{link.title}}</a> -->
       </div>

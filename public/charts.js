@@ -130,7 +130,9 @@ Chart.prototype.draw = function() {
   var t = this;
   this.arcs = this.svg.datum(this.data).selectAll('path').data(this.pie)
                                        .enter().append('path')
-                                       .attr('fill', function(d, i) { return t.color(i); })
+                                       .attr('fill', function(d, i) {
+                                         return t.color(i);
+                                       })
                                        .attr('d', this.arc)
                                        .on("mousedown", function(d, i) {
                                          if (t.name == 'lang') {
