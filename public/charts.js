@@ -158,6 +158,7 @@ Chart.prototype.label = function(data) {
                     .attr('id', function(d, i) {
                       return window.btoa(data[i].name)
                     })
+                    .attr('fill', '#BDBEC3')
                     .text(function(d, i) { return data[i].name })
                     .each(function(d) { this._current = d });
 }
