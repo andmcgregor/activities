@@ -9,7 +9,7 @@ if (process.env.ENV == 'production') {
   var config = require('./config.json');
 }
 
-config.other_requests = require('./config.json').other_requests;
+config.other_requests = require('./other_requests.json').other_requests;
 
 var company_repos = require('./company.json');
 
