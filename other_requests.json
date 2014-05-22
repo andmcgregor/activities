@@ -1,0 +1,23 @@
+"other_requests": [
+    {
+      "repo": "andmcgregor/prototyping",
+      "uri": "/repos/andmcgregor/prototyping/commits?author=andmcgregor&per_page=100&sha=master",
+      "branch": "master"
+    },
+    {
+      "repo": "take-the-interview/take_the_interview",
+      "uri": "/repos/take-the-interview/take_the_interview/commits?author=andmcgregor&per_page=100&sha=boot",
+      "branch": "boot"
+    },
+    {
+      "repo": "take-the-interview/mailman",
+      "uri": "/repos/take-the-interview/mailman/commits?author=andmcgregor&per_page=100&sha=boot",
+      "branch": "boot"
+    },
+    {
+      "repo": "take-the-interview/live",
+      "uri": "/repos/take-the-interview/live/commits?author=andmcgregor&per_page=100&sha=boot",
+      "branch": "boot"
+    }
+]
+

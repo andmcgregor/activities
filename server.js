@@ -9,6 +9,8 @@ if (process.env.PORT) {
   var config = require('./config.json');
 }
 
+config.other_requests = require('./config.json').other_requests;
+
 var company_repos = require('./company.json');
 
 var express  = require('express');
@@ -180,20 +182,20 @@ app.get('/api/files', function(req, res) {
 //  Job.update({ type: 'update' }, { due: new Date(new Date().getTime() - 86400000) }, {upsert: true}, function(err) {});
 //});
 
-app.get('/manual-update', function(req, res) {
-  Job.update({ type: 'update' }, { due: new Date(new Date().getTime() - 86400000) }, {upsert: true}, function(err) {
-    request_objs = [];
-    for(x = 0; x < config.other_requests.length; x++) {
-      request_objs.push({
-        uri: config.other_requests[x].uri,
-        page: 1,
-        repo: config.other_requests[x].repo,
-        branch: config.other_requests[x].branch
-      });
-    }
-    new Update(request_objs)
-  });
-});
+//app.get('/manual-update', function(req, res) {
+//  Job.update({ type: 'update' }, { due: new Date(new Date().getTime() - 86400000) }, {upsert: true}, function(err) {
+//    request_objs = [];
+//    for(x = 0; x < config.other_requests.length; x++) {
+//      request_objs.push({
+//        uri: config.other_requests[x].uri,
+//        page: 1,
+//        repo: config.other_requests[x].repo,
+//        branch: config.other_requests[x].branch
+//      });
+//    }
+//    new Update(request_objs)
+//  });
+//});
 
 app.get('*', function(req, res) {
   res.sendfile('./public/index.html');
@@ -231,14 +233,14 @@ Update.prototype.addToQueue = function(req) {
 Update.prototype.init = function() {
   this.errors = 0;
   if (this.queue.length == 0) {
-    //for(x = 0; x < config.other_requests.length; x++) {
-    //  this.addToQueue({
-    //    uri: config.other_requests[x].uri,
-    //    page: 1,
-    //    repo: config.other_requests[x].repo,
-    //    branch: config.other_requests[x].branch
-    //  });
-    //}
+    for(x = 0; x < config.other_requests.length; x++) {
+      this.addToQueue({
+        uri: config.other_requests[x].uri,
+        page: 1,
+        repo: config.other_requests[x].repo,
+        branch: config.other_requests[x].branch
+      });
+    }
     this.addToQueue({
       uri: '/user/repos?per_page=100',
       page: 1,
@@ -311,7 +313,6 @@ Update.prototype.request = function(path, page, repo, branch) {
       } else if (path.match(/pulls/)) {
         self.parsePulls(res, data, repo, page);
       } else if (path.match(/\/commits\//)) {
-        console.log('Gets here with file data length of '+data.files.length);
         self.parseCommit(res, data, repo, branch);
       }
 
@@ -370,15 +371,15 @@ Update.prototype.parseCommits = function(res, data, repo, branch) {
     });
   }
   for (y = 0; y < commits.length; y++) {
-    Activity.find({ sha: commits[y].sha }, function (err, res) {
-      if (res == []) {
+    //Activity.find({ sha: commits[y].sha }, function (err, res) {
+    //  if (res == []) {
         this.addToQueue({
           uri: '/repos/'+repo+'/commits/'+commits[y].sha,
           repo: repo,
           branch: branch
         });
-      }
-    });
+    //  }
+    //});
   }
 }
 
@@ -399,9 +400,13 @@ Update.prototype.parseCommit = function(res, data, repo, branch) {
         raw_url: data.files[x].raw_url
       });
     }
-    File.create(files, function(err) {
-      if (err)
-        console.log('WARNING ERROR !!!!!!!!!!!!!!!!!');
+    File.create(files, {
+      error: function(model, errors) {
+        var err = JSON.parse(errors.responseText);
+        $.each(errors, function (name, err) {
+          console.log(name + err.message);
+        });
+      }
     });
   }
 }
