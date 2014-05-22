@@ -1,36 +1,30 @@
 #Activities
 
-App to display programming stats using the Github API. Development in progress.
-Uses node.js and angular.
+App to display programming stats using the Github API. Built with
+Node/Angular/D3. Development still in progress.
 
-For setup, add a config.json file:
+[Live demo](http://andrewmcgregor.herokuapp.com)
 
-  {
-    "db": "",
-    "github_username": "",
-    "github_token": "",
-    "company_repos": [
-    ],
-    "title": "",
-    "intro": "",
-    "social": [
-      {
-        "title": "",
-        "href": ""
-      }
-    ]
-  }
+##Screenshot
 
-And a package.json file:
+![Activities](/activities.gif)
 
-  {
-    "name"         : "activities",
-    "version"      : "0.0.0",
-    "description"  : "Activity calendar for andrewmcgregor.me",
-    "main"         : "server.js",
-    "author"       : "andmcgregor",
-    "dependencies" : {
-      "express"    : "3.x",
-      "mongoose"   : "3.x"
+##Install
+
+Local file `config.json` file is required:
+
+    {
+      "db": "",
+      "github_username": "",
+      "github_token": "",
+      "company_repos": [
+      ],
+      "title": "",
+      "intro": "",
+      "social": [
+        {
+          "title": "",
+          "href": ""
+        }
+      ]
     }
-  }
