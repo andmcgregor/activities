@@ -363,13 +363,14 @@ Update.prototype.parseCommits = function(res, data, repo, branch) {
   if (commits.length != 0) {
     Activity.create(commits);
   }
-  if (commits.length == 100) {
-    this.addToQueue({
-      uri: res.headers.link.match(/^<[^>]+>/)[0].replace(/[<>]/g, ''),
-      repo: repo,
-      branch: branch
-    });
-  }
+  // uncomment for large repos not already in db
+  //if (commits.length == 100) {
+  //  this.addToQueue({
+  //    uri: res.headers.link.match(/^<[^>]+>/)[0].replace(/[<>]/g, ''),
+  //    repo: repo,
+  //    branch: branch
+  //  });
+  //}
   for (y = 0; y < commits.length; y++) {
     //Activity.find({ sha: commits[y].sha }, function (err, res) {
     //  if (res == []) {
