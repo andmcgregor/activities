@@ -1,4 +1,5 @@
-"other_requests": [
+{
+  "other_requests": [
     {
       "repo": "andmcgregor/prototyping",
       "uri": "/repos/andmcgregor/prototyping/commits?author=andmcgregor&per_page=100&sha=master",
@@ -19,5 +20,5 @@
       "uri": "/repos/take-the-interview/live/commits?author=andmcgregor&per_page=100&sha=boot",
       "branch": "boot"
     }
-]
-
+  ]
+}
