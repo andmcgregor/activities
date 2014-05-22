@@ -1,4 +1,14 @@
-// LOCAL var config = require('./config.json');
+if (process.env.PORT) {
+  var config = {
+    db: process.env.DB,
+    port: process.env.PORT,
+    github_username: process.env.GITHUB_USERNAME,
+    github_token: process.env.GITHUB_TOKEN
+  }
+} else {
+  var config = require('./config.json');
+}
+
 var company_repos = require('./company.json');
 
 var express  = require('express');
@@ -6,7 +16,7 @@ var app      = express();
 var mongoose = require('mongoose');
 var https    = require('https');
 
-mongoose.connect(process.env.DB);
+mongoose.connect(config.db);
 
 app.configure(function() {
   app.use(express.static(__dirname + '/public'));
@@ -46,7 +56,7 @@ var Request = mongoose.model('Request', {
   repo: String,
 });
 
-app.listen(process.env.PORT || 8000);
+app.listen(config.port);
 console.log('Server running at http://127.0.0.1:8000/');
 
 Job.find({}, function(err, jobs) {
@@ -170,19 +180,20 @@ app.get('/api/files', function(req, res) {
 //  Job.update({ type: 'update' }, { due: new Date(new Date().getTime() - 86400000) }, {upsert: true}, function(err) {});
 //});
 
-// add to default request queue rather than manual update
-//app.get('/custom-branches', function(req, res) {
-//  request_objs = [];
-//  for(x = 0; x < config.other_requests.length; x++) {
-//    request_objs.push({
-//      uri: config.other_requests[x].uri,
-//      page: 1,
-//      repo: config.other_requests[x].repo,
-//      branch: config.other_requests[x].branch
-//    });
-//  }
-//  new Update(request_objs)
-//});
+app.get('/manual-update', function(req, res) {
+  Job.update({ type: 'update' }, { due: new Date(new Date().getTime() - 86400000) }, {upsert: true}, function(err) {
+    request_objs = [];
+    for(x = 0; x < config.other_requests.length; x++) {
+      request_objs.push({
+        uri: config.other_requests[x].uri,
+        page: 1,
+        repo: config.other_requests[x].repo,
+        branch: config.other_requests[x].branch
+      });
+    }
+    new Update(request_objs)
+  });
+});
 
 app.get('*', function(req, res) {
   res.sendfile('./public/index.html');
@@ -275,9 +286,9 @@ Update.prototype.process = function() {
 Update.prototype.request = function(path, page, repo, branch) {
   var options = {
     headers: {
-      'User-Agent': process.env.GITHUB_USERNAME
+      'User-Agent': config.github_username
     },
-    auth: process.env.GITHUB_TOKEN + ':x-oauth-basic',
+    auth: config.github_token + ':x-oauth-basic',
     hostname: 'api.github.com',
     path: path,
     method: 'GET'
@@ -321,7 +332,7 @@ Update.prototype.parseRepos = function(res, data) {
   if (repos.length != 0) {
     for(x = 0; x < repos.length; x++) {
       this.addToQueue({
-        uri:  '/repos/'+repos[x]+'/commits?author='+process.env.GITHUB_USERNAME+'&per_page=100',
+        uri:  '/repos/'+repos[x]+'/commits?author='+config.github_username+'&per_page=100',
         repo: repos[x]
       });
       this.addToQueue({
@@ -375,6 +386,9 @@ Update.prototype.parseCommit = function(res, data, repo, branch) {
   if (data.files == undefined) {
     //this.errors++;
   } else {
+    console.log('---------------------------------');
+    console.log('Files to add: '+data.files.length);
+    console.log('---------------------------------');
     files = [];
     for (x = 0; x < data.files.length; x++) {
       files.push({
@@ -395,7 +409,7 @@ Update.prototype.parseCommit = function(res, data, repo, branch) {
 Update.prototype.parsePulls = function(res, data, repo, page) {
   pulls = [];
   for(x = 0; x < data.length; x++) {
-    if (data[x].user.login == process.env.GITHUB_USERNAME) {
+    if (data[x].user.login == config.github_username) {
       date = Date.parse(data[x].created_at)
       secret = company_repos.indexOf(repo) > -1;
       pulls.push({
