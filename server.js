@@ -1,4 +1,4 @@
-if (process.env.PORT) {
+if (process.env.ENV == 'production') {
   var config = {
     db: process.env.DB,
     port: process.env.PORT,
