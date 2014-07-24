@@ -3,7 +3,7 @@
 App to display programming stats using the Github API. Built with
 Node/Angular/D3. Development still in progress.
 
-[Live demo](http://andrewmcgregor.herokuapp.com)
+[Live demo](http://andrewmcgregor.me)
 
 ##Screenshot
 
