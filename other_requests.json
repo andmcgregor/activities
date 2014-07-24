@@ -6,19 +6,19 @@
       "branch": "master"
     },
     {
-      "repo": "take-the-interview/take_the_interview",
-      "uri": "/repos/take-the-interview/take_the_interview/commits?author=andmcgregor&per_page=100&sha=boot",
-      "branch": "boot"
+      "repo": "wunwun/wunwun",
+      "uri": "/repos/wunwun/wunwun/commits?author=andmcgregor&per_page=100&sha=boot",
+      "branch": "master"
     },
     {
-      "repo": "take-the-interview/mailman",
-      "uri": "/repos/take-the-interview/mailman/commits?author=andmcgregor&per_page=100&sha=boot",
-      "branch": "boot"
+      "repo": "wunwun/mobile-helper",
+      "uri": "/repos/wunwun/mobile-helper/commits?author=andmcgregor&per_page=100",
+      "branch": "master"
     },
     {
-      "repo": "take-the-interview/live",
-      "uri": "/repos/take-the-interview/live/commits?author=andmcgregor&per_page=100&sha=boot",
-      "branch": "boot"
+      "repo": "wunwun/wunwun-mobile",
+      "uri": "/repos/wunwun/wunwun-mobile/commits?author=andmcgregor&per_page=100",
+      "branch": "master"
     }
   ]
 }
