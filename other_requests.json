@@ -1,13 +1,13 @@
 {
   "other_requests": [
     {
-      "repo": "andmcgregor/prototyping",
-      "uri": "/repos/andmcgregor/prototyping/commits?author=andmcgregor&per_page=100&sha=master",
+      "repo": "wunwun/wunwun",
+      "uri": "/repos/wunwun/wunwun/commits?author=andmcgregor&per_page=100",
       "branch": "master"
     },
     {
-      "repo": "wunwun/wunwun",
-      "uri": "/repos/wunwun/wunwun/commits?author=andmcgregor&per_page=100&sha=boot",
+      "repo": "wunwun/wunwun-mobile",
+      "uri": "/repos/wunwun/wunwun-mobile/commits?author=andmcgregor&per_page=100",
       "branch": "master"
     },
     {
@@ -16,9 +16,10 @@
       "branch": "master"
     },
     {
-      "repo": "wunwun/wunwun-mobile",
-      "uri": "/repos/wunwun/wunwun-mobile/commits?author=andmcgregor&per_page=100",
+      "repo": "andmcgregor/prototyping",
+      "uri": "/repos/andmcgregor/prototyping/commits?author=andmcgregor&per_page=100",
       "branch": "master"
     }
+
   ]
 }

@@ -5,5 +5,8 @@
     "take-the-interview/live",
     "take-the-interview/preact-ruby",
     "take-the-interview/phone",
-    "take-the-interview/tti-api-client"
+    "take-the-interview/tti-api-client",
+    "wunwun/wunwun",
+    "wunwun/wunwun-mobile",
+    "wunwun/mobile-helper"
 ]
