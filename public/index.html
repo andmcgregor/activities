@@ -80,6 +80,7 @@
             <pattern id="diagonalHatch" patternUnits="userSpaceOnUse", width="4" height="4">
               <path d="M-1,1 l2,-2 M0,4 l4,-4 M3,5 l2,-2" stroke="#ffffff" stroke-width="1"></path>
             </pattern>
+          </defs>
 
           <g ng-repeat="cell in cells" ng-switch="cell.secret">
             <rect class="day" width="20" height="20" ng-attr-x="{{cell.x}}" ng-attr-y="{{cell.y}}" data-start="{{cell.start}}" data-end="{{cell.end}}" data-date="{{cell.date}}" data-commit-num="{{cell.commit_num}}" style="fill: {{cell.color}};" ng-attr-data-secret="{{cell.secret}}" ng-attr-data-commits-by-repo="{{cell.commits_by_repo}}" ng-attr-data-lang-per-cell="{{cell.lang_per_cell}}" ng-click="dayClick(cell, $event)" ng-mouseover="dayHover(cell, $event)" ng-mouseout="removeHover()"></rect>
